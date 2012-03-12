@@ -64,7 +64,7 @@ Enable the bundle in the kernel:
 ``` php
 // app/AppKernel.php
 
-    new Avro\EasyCsvBundle\AvroEasyCsvBundle
+    new Avro\CsvBundle\AvroCsvBundle
 ```
 
 ```
