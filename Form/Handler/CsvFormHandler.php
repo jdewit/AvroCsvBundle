@@ -29,7 +29,7 @@ class CsvFormHandler
             $this->form->bindRequest($this->request);
 
             if ($this->form->isValid()) {
-                $result = $this->reader->parse($this->form['file']->getData());
+                $result = $this->reader->parse($this->form['file']->getData(), $this->form['delimiter']->getData());
 
                 return $result;
             } 
