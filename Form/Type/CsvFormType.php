@@ -16,7 +16,7 @@ class CsvFormType extends AbstractType
         $builder
             ->add('delimiter', 'choice', array(
                 'label' => 'Delimiter',
-                'choices' => array(',' => 'comma', ';' => 'colon')
+                'choices' => array(',' => 'comma', ';' => 'semicolon')
             ))
             ->add('file', 'file', array(
                 'label' => 'File',
