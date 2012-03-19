@@ -42,7 +42,7 @@ class Reader
     {
         if (($row = fgetcsv($this->handle, 1000, $this->delimiter, $this->enclosure)) !== false) {
             $this->line++;
-            
+
             return $row;
         } else {
             return false;
