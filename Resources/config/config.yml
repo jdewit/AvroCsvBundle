@@ -18,5 +18,10 @@ services:
         scope: request
         arguments: ["@avro_csv.csv.form", "@request", "@avro_csv.reader"]
 
+    avro_csv.writer:
+        class: Avro\CsvBundle\Util\Writer
+
+
+
 
 
