@@ -3,7 +3,7 @@
     "type": "symfony-bundle",
     "description": "Symfony2 CSV Bundle",
     "keywords": ["CSV converter"],
-    "homepage": "http://github.com/avro/CsvBundle",
+    "homepage": "http://github.com/jdewit/AvroCsvBundle",
     "license": "MIT",
     "authors": [
         {
