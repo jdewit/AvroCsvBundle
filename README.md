@@ -10,7 +10,7 @@ Features:
 Documentation
 =============
 
-Read the <a href="http://jdewit.github.com/CsvBundle">documentation</a>.
+Read the <a href="http://jdewit.github.com/AvroCsvBundle">documentation</a>.
 
 Acknowledgements
 ================
