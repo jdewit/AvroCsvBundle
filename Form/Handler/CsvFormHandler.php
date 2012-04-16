@@ -21,12 +21,13 @@ class CsvFormHandler
     protected $metadata;
     protected $class;
     protected $headers;
-    protected $batchSize;
     protected $context;
+    protected $batchSize;
+    protected $useLegacyId;
     protected $useOwner;
     protected $importCount = 0;
 
-    public function __construct(Form $form, Request $request, $annotationReader, $csvReader, $em, $batchSize, $context, $useOwner)
+    public function __construct(Form $form, Request $request, $annotationReader, $csvReader, $em, $context, $batchSize, $useLegacyId, $useOwner)
     {
         $this->form = $form;
         $this->request = $request;  
@@ -35,6 +36,7 @@ class CsvFormHandler
         $this->em = $em;
         $this->batchSize = $batchSize;
         $this->context = $context;
+        $this->useLegacyId = $useLegacyId;
         $this->useOwner = $useOwner;
     }
 
@@ -58,11 +60,9 @@ class CsvFormHandler
                 $this->csvReader->open($file, $delimiter);
 
                 $this->headers = $this->csvReader->getHeaders(); 
-
                 $cmf = $this->em->getMetadataFactory();
                 $this->metadata = $cmf->getMetadataFor($class);
                 $this->class = $class;
-                //$fields = $this->getFieldsFromMetadata($metadata);
 
                 $i = 0;
                 while ($row = $this->csvReader->getRow()) {
@@ -86,19 +86,26 @@ class CsvFormHandler
      */
     public function import($row, $andFlush) 
     {
+        // Create new entity
+        $entity = new $this->class();
         $reflectionClass = new \ReflectionClass($this->class);
-        foreach ($reflectionClass->getProperties() as $property) {
+        $properties = $reflectionClass->getProperties();
+        foreach ($properties as $property) {
             foreach ($this->annotationReader->getPropertyAnnotations($property) as $annotation) {
                 if ($annotation instanceof Exclude) {
                     continue;
                 }
 
-                // Create new entity
-                $entity = new $this->class();
                 $fieldName = $property->getName();
 
-                if ($fieldName == 'id') {
-                    continue;
+                // set the entities legacyId 
+                if ($fieldName == 'id' && $this->useLegacyId && $reflectionClass->hasMethod('setLegacyId')) {
+                    $entity->setLegacyId($row['id']);
+                }
+
+                // set the entities owner
+                if ($this->useOwner && $reflectionClass->hasMethod('setOwner')) {
+                    $entity->setOwner($this->context->getToken()->getUser()->getOwner());
                 }
 
                 if ($this->metadata->hasAssociation($fieldName)) {
@@ -108,23 +115,24 @@ class CsvFormHandler
                             //Todo:
                         break;
                         case '2': // manyToOne
-                            $joinColumnId = $association['joinColumns'][0]['name'];
-                            $legacyId = $row[array_search($joinColumnId, $this->headers)];
-                            if ($legacyId) {
-                                try {
-                                    $criteria = array('legacyId' => $legacyId);
-                                    if ($this->useOwner) {
-                                        $criteria['owner'] = $this->context->getToken()->getUser()->getOwner();
-                                    }
-                                    $relation = $this->em->getRepository($association['targetEntity'])->findOneBy($criteria);
-                                    if ($relation) {
-                                        $entity->{'set'.ucFirst($association['fieldName'])}($relation);
-                                    }
-                                } catch(\Exception $e) {
-                                    // legacyId does not exist
-                                    // fail silently
-                                }
-                            }
+                            //Todo:
+                            //$joinColumnId = $association['joinColumns'][0]['name'];
+                            //$legacyId = $row[array_search($joinColumnId, $this->headers)];
+                            //if ($legacyId) {
+                            //    try {
+                            //        $criteria = array('legacyId' => $legacyId);
+                            //        if ($this->useOwner) {
+                            //            $criteria['owner'] = $this->context->getToken()->getUser()->getOwner();
+                            //        }
+                            //        $relation = $this->em->getRepository($association['targetEntity'])->findOneBy($criteria);
+                            //        if ($relation) {
+                            //            $entity->{'set'.ucFirst($association['fieldName'])}($relation);
+                            //        }
+                            //    } catch(\Exception $e) {
+                            //        // legacyId does not exist
+                            //        // fail silently
+                            //    }
+                            //}
                         break;
                         case '4': // oneToMany
                             //TODO:
@@ -134,16 +142,14 @@ class CsvFormHandler
                         break;
                     }
                 } else {
+                    $fieldName = ucFirst($fieldName); 
                     $key = array_search($fieldName, $this->headers);
                     if ($key) {
-                        if (array_key_exists($key, $row)) {
-                            $entity->{'set'.ucFirst($fieldName)}($row[$key]);
-                        } 
+                        $entity->{'set'.$fieldName}($row[$key]);
                     }
                 }
             }
         }
-
         $this->em->persist($entity);
 
         $this->importCount++;

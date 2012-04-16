@@ -27,7 +27,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->arrayNode('import')
                     ->children()
-                        ->booleanNode('legacy_id')->defaultFalse()->end()
+                        ->booleanNode('use_legacy_id')->defaultFalse()->end()
                         ->scalarNode('batch_size')->defaultValue('15')->end()
                         ->scalarNode('use_owner')->defaultFalse()->end()
                     ->end()

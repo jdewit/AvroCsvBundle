@@ -16,7 +16,7 @@ services:
     avro_csv.form.handler:
         class: Avro\CsvBundle\Form\Handler\CsvFormHandler
         scope: request
-        arguments: ["@avro_csv.form", "@request", "@annotation_reader", "@avro_csv.reader", "@doctrine.orm.entity_manager", "%avro_csv.batch_size%", "@security.context", "%avro_csv.use_owner%"]
+        arguments: ["@avro_csv.form", "@request", "@annotation_reader", "@avro_csv.reader", "@doctrine.orm.entity_manager", "@security.context", "%avro_csv.batch_size%", "%avro_csv.use_legacy_id%", "%avro_csv.use_owner%"]
 
     avro_csv.writer:
         class: Avro\CsvBundle\Util\Writer

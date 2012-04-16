@@ -26,6 +26,6 @@ class AvroCsvExtension extends Extension
 
         $container->setParameter('avro_csv.batch_size', $config['import']['batch_size']);
         $container->setParameter('avro_csv.use_owner', $config['import']['use_owner']);
-        $container->setParameter('avro_csv.legacy_id', $config['import']['legacy_id']);
+        $container->setParameter('avro_csv.use_legacy_id', $config['import']['use_legacy_id']);
     }
 }
