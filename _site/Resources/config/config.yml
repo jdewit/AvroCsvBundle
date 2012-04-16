@@ -1,0 +1,27 @@
+services:
+    avro_csv.reader:
+        class: Avro\CsvBundle\Util\Reader
+
+    avro_csv.form.type:
+        class: Avro\CsvBundle\Form\Type\CsvFormType
+        tags: 
+            - { name: form.type, alias: avro_csv_csv }
+       
+    avro_csv.form:
+        factory_method: createNamed 
+        factory_service: form.factory
+        class: Symfony\Component\Form\Form
+        arguments: ["@avro_csv.form.type", avro_csv_csv]
+
+    avro_csv.form.handler:
+        class: Avro\CsvBundle\Form\Handler\CsvFormHandler
+        scope: request
+        arguments: ["@avro_csv.form", "@request", "@annotation_reader", "@avro_csv.reader", "@doctrine.orm.entity_manager", "%avro_csv.batch_size%", "@security.context", "%avro_csv.use_owner%"]
+
+    avro_csv.writer:
+        class: Avro\CsvBundle\Util\Writer
+
+
+
+
+
