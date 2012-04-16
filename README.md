@@ -58,7 +58,7 @@ without actually having to create the file.
      *  Export clients via csv.
      *
      * @Route("/export", name="avro_crm_client_export")
-     * @Template
+     * @method("post")
      */
     public function exportAction()
     {
@@ -68,7 +68,7 @@ without actually having to create the file.
         foreach ($selected as $id) {
             $client = $clientManager->findAsArray($id); // find the entity in array format
             if ($id === reset($selected)) {
-                $content = $writer->convertRow(array_keys($client));
+                $content = $writer->convertRow(array_keys($client)); // make first row a header
             }
 
             $content .= $writer->convertRow(array_values($client)); // build the csv file
