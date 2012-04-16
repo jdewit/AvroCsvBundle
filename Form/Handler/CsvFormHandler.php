@@ -3,7 +3,7 @@ namespace Avro\CsvBundle\Form\Handler;
 
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
-use Avro\CsvBundle\Annotation\ExcludeImport;
+use Avro\CsvBundle\Annotation\Exclude;
 
 /*
  * Csv Form Handler
@@ -101,6 +101,8 @@ class CsvFormHandler
                 // set the entities legacyId 
                 if ($fieldName == 'id' && $this->useLegacyId && $reflectionClass->hasMethod('setLegacyId')) {
                     $entity->setLegacyId($row['id']);
+                } else {
+                    continue;
                 }
 
                 // set the entities owner
