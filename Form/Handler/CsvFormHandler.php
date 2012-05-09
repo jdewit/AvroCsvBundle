@@ -14,13 +14,9 @@ class CsvFormHandler
 {
     protected $form;
     protected $request;
-    protected $clientManager;
     protected $annotationReader;
     protected $csvReader;
     protected $em;
-    protected $metadata;
-    protected $class;
-    protected $headers;
     protected $context;
     protected $batchSize;
     protected $useLegacyId;
@@ -66,6 +62,10 @@ class CsvFormHandler
 
                 $i = 0;
                 while ($row = $this->csvReader->getRow()) {
+                    // skip rows that dont have an id
+                    if (!$row[0]) {
+                        continue;
+                    }
                     if (($i % $this->batchSize) == 0) {
                         $this->import($row, true);
                     } else {
@@ -92,63 +92,66 @@ class CsvFormHandler
         $properties = $reflectionClass->getProperties();
         foreach ($properties as $property) {
             foreach ($this->annotationReader->getPropertyAnnotations($property) as $annotation) {
+                $skipProperty = false;
                 if ($annotation instanceof Exclude) {
-                    continue;
+                    $skipProperty = true;
                 }
+            }
 
-                $fieldName = $property->getName();
+            if (true === $skipProperty) {
+                continue;
+            }
 
-                // set the entities legacyId 
-                if ($fieldName == 'id' && $this->useLegacyId && $reflectionClass->hasMethod('setLegacyId')) {
-                    $entity->setLegacyId($row['id']);
-                } else {
-                    continue;
+            $fieldName = $property->getName();
+
+            // set the entities legacyId 
+            if ($fieldName === 'id' && true === $this->useLegacyId && $reflectionClass->hasMethod('setLegacyId')) {
+                $entity->setLegacyId($row['id']);
+            } 
+
+            // set the entities owner
+            if ($this->useOwner && $reflectionClass->hasMethod('setOwner')) {
+                $entity->setOwner($this->context->getToken()->getUser()->getOwner());
+            }
+
+            if ($this->metadata->hasAssociation($fieldName)) {
+                $association = $this->metadata->associationMappings[$fieldName];
+                switch ($association['type']) {
+                    case '1': // oneToOne
+                        //Todo:
+                    break;
+                    case '2': // manyToOne
+                        //Todo:
+                        //$joinColumnId = $association['joinColumns'][0]['name'];
+                        //$legacyId = $row[array_search($joinColumnId, $this->headers)];
+                        //if ($legacyId) {
+                        //    try {
+                        //        $criteria = array('legacyId' => $legacyId);
+                        //        if ($this->useOwner) {
+                        //            $criteria['owner'] = $this->context->getToken()->getUser()->getOwner();
+                        //        }
+                        //        $relation = $this->em->getRepository($association['targetEntity'])->findOneBy($criteria);
+                        //        if ($relation) {
+                        //            $entity->{'set'.ucFirst($association['fieldName'])}($relation);
+                        //        }
+                        //    } catch(\Exception $e) {
+                        //        // legacyId does not exist
+                        //        // fail silently
+                        //    }
+                        //}
+                    break;
+                    case '4': // oneToMany
+                        //TODO:
+                    break;
+                    case '8': // manyToMany
+                        //TODO:
+                    break;
                 }
-
-                // set the entities owner
-                if ($this->useOwner && $reflectionClass->hasMethod('setOwner')) {
-                    $entity->setOwner($this->context->getToken()->getUser()->getOwner());
-                }
-
-                if ($this->metadata->hasAssociation($fieldName)) {
-                    $association = $this->metadata->associationMappings[$fieldName];
-                    switch ($association['type']) {
-                        case '1': // oneToOne
-                            //Todo:
-                        break;
-                        case '2': // manyToOne
-                            //Todo:
-                            //$joinColumnId = $association['joinColumns'][0]['name'];
-                            //$legacyId = $row[array_search($joinColumnId, $this->headers)];
-                            //if ($legacyId) {
-                            //    try {
-                            //        $criteria = array('legacyId' => $legacyId);
-                            //        if ($this->useOwner) {
-                            //            $criteria['owner'] = $this->context->getToken()->getUser()->getOwner();
-                            //        }
-                            //        $relation = $this->em->getRepository($association['targetEntity'])->findOneBy($criteria);
-                            //        if ($relation) {
-                            //            $entity->{'set'.ucFirst($association['fieldName'])}($relation);
-                            //        }
-                            //    } catch(\Exception $e) {
-                            //        // legacyId does not exist
-                            //        // fail silently
-                            //    }
-                            //}
-                        break;
-                        case '4': // oneToMany
-                            //TODO:
-                        break;
-                        case '8': // manyToMany
-                            //TODO:
-                        break;
-                    }
-                } else {
-                    $fieldName = ucFirst($fieldName); 
-                    $key = array_search($fieldName, $this->headers);
-                    if ($key) {
-                        $entity->{'set'.$fieldName}($row[$key]);
-                    }
+            } else {
+                $fieldName = ucFirst($fieldName); 
+                $key = array_search($fieldName, $this->headers);
+                if ($key && array_key_exists($key, $row)) {
+                    $entity->{'set'.$fieldName}($row[$key]);
                 }
             }
         }
