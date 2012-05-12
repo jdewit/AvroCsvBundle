@@ -18,9 +18,10 @@ class CsvFormHandler
     protected $csvReader;
     protected $em;
     protected $context;
+    protected $useOwner;
+    protected $owner;
     protected $batchSize;
     protected $useLegacyId;
-    protected $useOwner;
     protected $importCount = 0;
 
     public function __construct(Form $form, Request $request, $annotationReader, $csvReader, $em, $context, $batchSize, $useLegacyId, $useOwner)
@@ -34,6 +35,9 @@ class CsvFormHandler
         $this->context = $context;
         $this->useLegacyId = $useLegacyId;
         $this->useOwner = $useOwner;
+        if (true === $useOwner) {
+            $this->owner = $context->getToken()->getUser()->getOwner();
+        }
     }
 
     /*
@@ -63,7 +67,7 @@ class CsvFormHandler
                 $i = 0;
                 while ($row = $this->csvReader->getRow()) {
                     // skip rows that dont have an id
-                    if (!$row[0]) {
+                    if (!$row[array_search('Id', $this->headers)]) {
                         continue;
                     }
                     if (($i % $this->batchSize) == 0) {
@@ -90,6 +94,12 @@ class CsvFormHandler
         $entity = new $this->class();
         $reflectionClass = new \ReflectionClass($this->class);
         $properties = $reflectionClass->getProperties();
+
+        // set the entities legacyId 
+        if ($reflectionClass->hasProperty('legacyId')) {
+            $entity->setLegacyId($row[array_search('Id', $this->headers)]);
+        } 
+
         foreach ($properties as $property) {
             foreach ($this->annotationReader->getPropertyAnnotations($property) as $annotation) {
                 $skipProperty = false;
@@ -104,15 +114,9 @@ class CsvFormHandler
 
             $fieldName = $property->getName();
 
-            // set the entities legacyId 
-            if ($fieldName === 'id' && true === $this->useLegacyId && $reflectionClass->hasMethod('setLegacyId')) {
-                $entity->setLegacyId($row['id']);
+            if ($fieldName === 'id' || $fieldName === 'legacyId') {
+                continue;
             } 
-
-            // set the entities owner
-            if ($this->useOwner && $reflectionClass->hasMethod('setOwner')) {
-                $entity->setOwner($this->context->getToken()->getUser()->getOwner());
-            }
 
             if ($this->metadata->hasAssociation($fieldName)) {
                 $association = $this->metadata->associationMappings[$fieldName];
@@ -121,24 +125,29 @@ class CsvFormHandler
                         //Todo:
                     break;
                     case '2': // manyToOne
-                        //Todo:
-                        //$joinColumnId = $association['joinColumns'][0]['name'];
-                        //$legacyId = $row[array_search($joinColumnId, $this->headers)];
-                        //if ($legacyId) {
-                        //    try {
-                        //        $criteria = array('legacyId' => $legacyId);
-                        //        if ($this->useOwner) {
-                        //            $criteria['owner'] = $this->context->getToken()->getUser()->getOwner();
-                        //        }
-                        //        $relation = $this->em->getRepository($association['targetEntity'])->findOneBy($criteria);
-                        //        if ($relation) {
-                        //            $entity->{'set'.ucFirst($association['fieldName'])}($relation);
-                        //        }
-                        //    } catch(\Exception $e) {
-                        //        // legacyId does not exist
-                        //        // fail silently
-                        //    }
-                        //}
+                        $joinColumnId = $association['joinColumns'][0]['name'];
+                        $legacyId = $row[array_search($this->toCamelCase($joinColumnId), $this->headers)];
+                        if ($legacyId) {
+                            //try {
+                                $criteria = array('legacyId' => $legacyId);
+                                if ($this->useOwner) {
+                                    $criteria['owner'] = $this->owner->getId();
+                                }
+
+                                $associationClass = new \ReflectionClass($association['targetEntity']);
+                                if ($associationClass->hasProperty('legacyId')) {
+                                    $relation = $this->em->getRepository($association['targetEntity'])->findOneBy($criteria);
+                                    if ($relation) {
+                                        $entity->{'set'.ucfirst($association['fieldName'])}($relation);
+                                    }
+                                }
+
+                            //} catch(\Exception $e) {
+                            //    print_r($e->getMessage()); exit;
+                                // legacyId does not exist
+                                // fail silently
+                            //}
+                        }
                     break;
                     case '4': // oneToMany
                         //TODO:
@@ -148,13 +157,20 @@ class CsvFormHandler
                     break;
                 }
             } else {
-                $fieldName = ucFirst($fieldName); 
-                $key = array_search($fieldName, $this->headers);
-                if ($key && array_key_exists($key, $row)) {
-                    $entity->{'set'.$fieldName}($row[$key]);
+                $key = array_search(ucfirst($fieldName), $this->headers);
+                if (is_int($key)) {
+                    if (array_key_exists($key, $row)) {
+                        $entity->{'set'.ucfirst($fieldName)}($row[$key]);
+                    }
                 }
             }
         }
+
+        // set the entities owner
+        if ($this->useOwner && $reflectionClass->hasMethod('setOwner')) {
+            $entity->setOwner($this->owner);
+        }
+
         $this->em->persist($entity);
 
         $this->importCount++;
@@ -163,6 +179,19 @@ class CsvFormHandler
             $this->em->flush();
             $this->em->clear($this->class);
         }
+    }
+
+    /**
+    * Translates a string with underscores into camel case
+    *
+    * @param string $str String in underscore format
+    * @return string $str translated into camel caps
+    */
+    public function toCamelCase($str) {
+        $str = ucfirst($str);
+        $func = create_function('$c', 'return strtoupper($c[1]);');
+
+        return preg_replace_callback('/_([a-z])/', $func, $str);
     }
 
     /*
