@@ -50,7 +50,6 @@ class Writer
 
         if (is_array($row)) {
             $row = array_map($formatValue, $row);
-            $row = implode(",", $row);
         } else {
             $row = explode(',', $row);
             $row = array_map('trim', $row);
