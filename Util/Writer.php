@@ -25,7 +25,7 @@ class Writer
      */
     public function open($file, $delimiter = ',', $mode = 'r+', $enclosure = '"')
     {
-        file_put_contents($file);
+        file_put_contents($file, '');
         $this->handle = fopen($file, $mode);
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
