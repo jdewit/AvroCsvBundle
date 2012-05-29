@@ -25,7 +25,7 @@ class Writer
      */
     public function open($file, $delimiter = ',', $mode = 'r+', $enclosure = '"')
     {
-        file_put_contents($file);
+        file_put_contents($file, '');
         $this->handle = fopen($file, $mode);
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
@@ -50,7 +50,6 @@ class Writer
 
         if (is_array($row)) {
             $row = array_map($formatValue, $row);
-            $row = implode(",", $row);
         } else {
             $row = explode(',', $row);
             $row = array_map('trim', $row);
