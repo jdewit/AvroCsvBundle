@@ -26,12 +26,14 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('import')
+                    ->addDefaultsIfNotSet()
                     ->children()
                         ->booleanNode('use_legacy_id')->defaultFalse()->end()
                         ->scalarNode('batch_size')->defaultValue('15')->end()
                         ->scalarNode('use_owner')->defaultFalse()->end()
                     ->end()
-             ->end();
+                ->end()
+            ->end();
 
 
         return $treeBuilder;
