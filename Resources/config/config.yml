@@ -11,7 +11,7 @@ services:
         factory_method: createNamed 
         factory_service: form.factory
         class: Symfony\Component\Form\Form
-        arguments: ["@avro_csv.form.type", avro_csv_csv]
+        arguments: [avro_csv_csv, "@avro_csv.form.type"]
 
     avro_csv.form.handler:
         class: Avro\CsvBundle\Form\Handler\CsvFormHandler
