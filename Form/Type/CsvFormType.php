@@ -10,14 +10,14 @@ use Symfony\Component\Form\FormBuilderInterface;
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
 class CsvFormType extends AbstractType
-{ 
+{
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('delimiter', 'choice', array(
                 'label' => 'Delimiter',
                 'choices' => array(
-                    ',' => 'comma', 
+                    ',' => 'comma',
                     ';' => 'semicolon',
                     '|' => 'pipe',
                     ':' => 'colon'
@@ -32,6 +32,6 @@ class CsvFormType extends AbstractType
 
     public function getName()
     {
-        return 'avro_csv_csv';
+        return 'avro_csv_csv_import';
     }
 }
