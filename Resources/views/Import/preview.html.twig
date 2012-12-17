@@ -1,0 +1,75 @@
+{% extends 'AvroCsvBundle::layout.html.twig' %}
+{% block content %}
+    <div class="page-header">
+        <h1>Map Columns</h1>
+    </div>
+    <form class="form-horizontal" action="{{ path('avro_csv_import_process', {'alias': alias}) }}" method="post" {{ form_enctype(form) }}>
+        <div id="error-container"></div>
+        <div class="form-content">
+            {{ form_row(form.delimiter) }}
+            {{ form_row(form.filePath) }}
+            <table class="table-styled table-bordered table-striped table-rounded">
+                <thead>
+                    <tr>
+                        <th>Your Column Headings</th>
+                        <th>Field Mapping</th>
+                        <th>Preview</th>
+                    </tr>
+                </thead>
+                <tbody class="collection">
+                    {% set fieldChoice = form_widget(form.fields.vars['prototype']) %}
+                    {% for header in headers %}
+                        <tr class="collection-item">
+                            <td>{{ header }}</td>
+                            <td>{{ fieldChoice | raw }}</td>
+                            <td>{{ row[loop.index0] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {{ form_widget(form._token) }}
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="sprite-tick"></i>Import CSV</button>
+            <a href="#" class="btn"><i class="ui-icon ui-icon-closethick"></i>Cancel</a>
+        </div>
+    </form>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var headers = {{ headersJson | raw }};
+            var row = {{ rowJson | raw }};
+            var fields = {{ fieldsJson | raw }};
+
+            $.each(headers, function(k, v) {
+                console.log($.inArray(v, fields));
+            });
+            {#var fieldChoice = '{{ form_widget(form.fields.vars['prototype']) }}';#}
+
+            {#$.each(headers, function(k, v) {#}
+                {#$('.collection').append(#}
+                    {#'<tr class="collection-item">' +#}
+                        {#'<td>' + v + '</td>' +#}
+                        {#'<td>' + fieldChoice + '</td>' +#}
+                        {#'<td class="sample-column">' + row[k] + '</td>' +#}
+                    {#'</tr>'#}
+                {#);#}
+            {#});#}
+
+            $('form').submit(function() {
+                // rename collection items
+                $(this).find('.collection').each(function() {
+                    var itemIndex = 0;
+                    $(this).find('.collection-item').each(function() {
+                        $(this).find('input, select, textarea').each(function() {
+                            if ($(this).attr('id') && $(this).attr('name')) {
+                                $(this).attr('id', $(this).attr('id').replace(/__name__/g, itemIndex));
+                                $(this).attr('name', $(this).attr('name').replace(/__name__/g, itemIndex));
+                            }
+                        });
+                        itemIndex++;
+                    });
+                });
+            })
+        });
+    </script>
+{% endblock %}

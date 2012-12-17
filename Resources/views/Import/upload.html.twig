@@ -1,0 +1,15 @@
+{% extends 'AvroCsvBundle::layout.html.twig' %}
+{% block content %}
+    <div class="page-header">
+        <h1>Import</h1>
+    </div>
+    <form class="form-horizontal" action="{{ path('avro_csv_import_preview', {'alias': alias}) }}" method="post" {{ form_enctype(form) }}>
+        <div id="error-container"></div>
+        <div class="form-content">
+            {{ form_widget(form) }}
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> Import CSV</button>
+        </div>
+    </form>
+{% endblock %}
