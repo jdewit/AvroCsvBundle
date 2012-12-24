@@ -18,7 +18,8 @@
     },
     "require-dev": {
         "twig/twig": "*",
-        "doctrine/doctrine-bundle": "*"
+        "doctrine/doctrine-bundle": "*",
+        "avro/case-bundle": "*"
     },
     "autoload": {
         "psr-0": { "Avro\\CsvBundle": "" }

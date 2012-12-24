@@ -9,8 +9,3 @@ services:
     avro_csv.field_retriever:
         class: Avro\CsvBundle\Util\FieldRetriever
         arguments: ["@annotation_reader", "@avro_case.converter"]
-
-    #avro_csv.preview.form.handler:
-        #class: Avro\CsvBundle\Form\Handler\PreviewFormHandler
-        #scope: request
-        #arguments: ["@avro_csv.form", "@request", "@annotation_reader", "@avro_csv.reader", "@doctrine.orm.entity_manager", "@security.context", "%avro_csv.batch_size%", "%avro_csv.use_legacy_id%", "%avro_csv.use_owner%"]

@@ -1,12 +1,12 @@
 <?php
 
-namespace Avro\CsvBundle\Tests\Util\ReaderTest;
+namespace Avro\CsvBundle\Tests\Util;
 
 use Avro\CsvBundle\Util\Reader;
 
 class ReaderTest extends \PHPUnit_Framework_TestCase
 {
-    private $_reader;
+    protected $reader;
 
     public function setUp()
     {
@@ -18,9 +18,9 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             array(
-                0 => 'Column1',
-                1 => 'Column2',
-                2 => 'Column3',
+                0 => 'Header 1',
+                1 => 'Header 2',
+                2 => 'Header 3',
             ),
             $this->reader->getHeaders()
         );
@@ -30,9 +30,25 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             array(
-                0 => '1column2value',
-                1 => '1column3value',
-                2 => '1column4value',
+                0 => 'row1column1',
+                1 => 'row1column2',
+                2 => 'row1column3',
+            ),
+            $this->reader->getRow()
+        );
+        $this->assertEquals(
+            array(
+                0 => 'row2column1',
+                1 => 'row2column2',
+                2 => 'row2column3',
+            ),
+            $this->reader->getRow()
+        );
+        $this->assertEquals(
+            array(
+                0 => 'row3column1',
+                1 => 'row3column2',
+                2 => 'row3column3',
             ),
             $this->reader->getRow()
         );
@@ -40,6 +56,6 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
 
     public function testGetAll()
     {
-        $this->assertEquals(5, count($this->reader->getAll()));
+        $this->assertEquals(3, count($this->reader->getAll()));
     }
 }

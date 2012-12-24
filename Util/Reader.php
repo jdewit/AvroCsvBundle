@@ -15,15 +15,6 @@ class Reader
     protected $enclosure;
     protected $line;
     protected $headers;
-    protected $caseConverter;
-
-    /**
-     * @param VariableConverter $caseConverter
-     */
-    public function __construct(CaseConverter $caseConverter)
-    {
-        $this->caseConverter = $caseConverter;
-    }
 
     /**
      * Open a CSV file
@@ -42,7 +33,7 @@ class Reader
         $this->line = 0;
 
         if ($hasHeaders) {
-            $this->headers = $this->formatHeaders($this->getRow());
+            $this->headers = $this->getRow();
         }
     }
 
@@ -85,23 +76,6 @@ class Reader
     public function getHeaders()
     {
         return $this->headers;
-    }
-
-    /**
-     * Format header names to camel case
-     *
-     * @param array $arr
-     *
-     * @return array $headers
-     */
-    private function formatHeaders(array $arr)
-    {
-        $headers = array();
-        foreach($arr as $k => $v) {
-            $headers[] = $this->caseConverter->toTitleCase($v);
-        }
-
-        return $headers;
     }
 
     /**
