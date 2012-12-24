@@ -52,6 +52,7 @@ Add this required config to your app/config/config.yml file
 
 ``` yaml
 avro_csv:
+    db_driver: orm # supports orm
     batch_size: 15 # The batch size between flushing & clearing the doctrine object manager
     tmp_upload_dir: "%kernel.root_dir%/../web/uploads/tmp/" # The directory to upload the csv files to
 ```
