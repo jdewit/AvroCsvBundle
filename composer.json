@@ -2,7 +2,7 @@
     "name": "avro/csv-bundle",
     "type": "symfony-bundle",
     "description": "Symfony2 CSV Bundle",
-    "keywords": ["CSV, import, export"],
+    "keywords": ["CSV", "import", "export"],
     "homepage": "http://github.com/jdewit/AvroCsvBundle",
     "license": "MIT",
     "authors": [
@@ -18,8 +18,7 @@
     },
     "require-dev": {
         "twig/twig": "*",
-        "doctrine/doctrine-bundle": "*",
-        "avro/case-bundle": "*"
+        "doctrine/doctrine-bundle": "*"
     },
     "autoload": {
         "psr-0": { "Avro\\CsvBundle": "" }
