@@ -25,7 +25,7 @@ class RowAddedEvent extends Event
      * @param array          $row    The row being imported
      * @param array          $fields The mapped fields
      */
-    public function __construct($object, array $row, $fields)
+    public function __construct($object, array $row, array $fields)
     {
         $this->object = $object;
         $this->row = $row;
