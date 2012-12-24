@@ -1,4 +1,5 @@
 <?php
+
 /**
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -6,12 +7,9 @@
 
 namespace Avro\CsvBundle\Controller;
 
-use Symfony\Component\DependencyInjection\ContainerAware;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\DependencyInjection\ContainerAware;
 
 use Avro\CsvBundle\Form\Type\ImportFormType;
 
@@ -27,11 +25,9 @@ class ImportController extends ContainerAware
      *
      * @param string $alias The objects alias
      *
-     * @Route("/upload/{alias}", name="avro_csv_import_upload")
-     *
      * @return View
      */
-    public function uploadAction(Request $request, $alias)
+    public function uploadAction($alias)
     {
         $fieldChoices = $this->container->get('avro_csv.field_retriever')->getFields($this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)), 'title', true);
 
@@ -48,9 +44,6 @@ class ImportController extends ContainerAware
      *
      * @param Request $request The request
      * @param string  $alias   The objects alias
-     *
-     * @Route("/import/{alias}/mapping", name="avro_csv_import_mapping")
-     * @Template
      *
      * @return view
      */
@@ -95,9 +88,6 @@ class ImportController extends ContainerAware
      *
      * @param Request $request The request
      * @param string  $alias   The objects alias
-     *
-     * @Route("/import/{alias}/process", name="avro_csv_import_process")
-     * @Template
      *
      * @return view
      */
