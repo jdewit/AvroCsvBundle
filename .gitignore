@@ -1,3 +1,7 @@
 *.swp
 _site
+vendor/
+composer.phar
+composer.lock
+
 

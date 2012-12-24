@@ -1,12 +1,14 @@
 <?php
 namespace Avro\CsvBundle\Util;
 
-/*
+use Avro\CaseBundle\Util\CaseConverter;
+
+/**
  * Read a CSV file
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-class Reader 
+class Reader
 {
     protected $handle;
     protected $delimiter;
@@ -14,14 +16,14 @@ class Reader
     protected $line;
     protected $headers;
 
-    /*
-     * Open CSV file
+    /**
+     * Open a CSV file
      *
-     * @param $file 
-     * @param $mode
-     * @param string $delimiter 
-     * @param string $enclosure
-     * @param boolean $hasHeaders
+     * @param string  $file       The file path
+     * @param string  $delimiter  The CSV's delimiter
+     * @param string  $mode       fopen mode
+     * @param string  $enclosure  The enclosure
+     * @param boolean $hasHeaders Does the CSV have any headers?
      */
     public function open($file, $delimiter = ',', $mode = 'r+', $enclosure = '"', $hasHeaders = true)
     {
@@ -31,12 +33,14 @@ class Reader
         $this->line = 0;
 
         if ($hasHeaders) {
-            $this->headers = $this->formatHeaders($this->getRow());
+            $this->headers = $this->getRow();
         }
     }
 
-    /*
+    /**
      * Return a row
+     *
+     * @return array or false
      */
     public function getRow()
     {
@@ -49,10 +53,10 @@ class Reader
         }
     }
 
-    /*
+    /**
      * Return entire table
      *
-     * @return array results
+     * @return array $data
      */
     public function getAll()
     {
@@ -64,51 +68,17 @@ class Reader
         return $data;
     }
 
-    /*
+    /**
      * Get headers
+     *
+     * @return array
      */
-    public function getHeaders() 
+    public function getHeaders()
     {
         return $this->headers;
     }
 
-    /*
-     * Format header names
-     *
-     * @param $headerRow
-     */
-    public function formatHeaders($row)
-    {
-        $headers = array();
-        foreach($row as $k => $v) {
-            $headers[] = $this->toCamelCase($v);
-        }
-
-        return $headers;
-    }
-
     /**
-    * Translates a string with underscores into camel case
-    *
-    * @param string $str String in underscore format
-    * @return string $str translated into camel caps
-    */
-    public function toCamelCase($str) {
-        $str = ucfirst($str);
-        $func = create_function('$c', 'return strtoupper($c[1]);');
-
-        return preg_replace_callback('/_([a-z])/', $func, $str);
-    }
-
-    /*
-     * Get line
-     */
-    public function getLine()
-    {
-        return $this->line;
-    }
-
-    /*
      * Close file
      */
     public function __destruct()

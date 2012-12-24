@@ -1,0 +1,65 @@
+{% extends 'AvroCsvBundle::layout.html.twig' %}
+{% block content %}
+    <div class="page-header">
+        <h1>Map Columns</h1>
+    </div>
+    <form class="form-horizontal" action="{{ path('avro_csv_import_process', {'alias': alias}) }}" method="post" {{ form_enctype(form) }}>
+        <div id="error-container"></div>
+        <div class="form-content">
+            <table class="table-styled table-bordered table-striped table-rounded">
+                <thead>
+                    <tr>
+                        <th>Your Column Headings</th>
+                        <th>Field Mapping</th>
+                        <th>Preview</th>
+                    </tr>
+                </thead>
+                <tbody class="collection">
+                    {% set fieldChoice = form_widget(form.fields.vars['prototype']) %}
+                    {% for header in headers %}
+                        <tr class="collection-item">
+                            <td>{{ header }}</td>
+                            <td>{{ fieldChoice | raw }}</td>
+                            <td>{{ row[loop.index0] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="hide">
+                {{ form_row(form.delimiter) }}
+                {{ form_row(form.filename) }}
+            </div>
+            <table class="table-styled table-bordered table-striped table-rounded">
+            {{ form_widget(form._token) }}
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-large btn-primary"><i class="icon-ok icon-white"></i> Import CSV</button>
+            <a href="{{ path('avro_csv_import_upload', {'alias': alias}) }}" class="btn"><i class="icon-arrow-left"></i> Back</a>
+        </div>
+    </form>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var headers = {{ headersJson | raw }};
+            var fieldSelectors = $('form .collection').find('select');
+            $.each(headers, function(k, v) {
+                $(fieldSelectors[k]).find('option[value="' + v + '"]').attr('selected', 'selected');
+            });
+
+            $('form').submit(function() {
+                // rename collection items
+                $(this).find('.collection').each(function() {
+                    var itemIndex = 0;
+                    $(this).find('.collection-item').each(function() {
+                        $(this).find('input, select, textarea').each(function() {
+                            if ($(this).attr('id') && $(this).attr('name')) {
+                                $(this).attr('id', $(this).attr('id').replace(/__name__/g, itemIndex));
+                                $(this).attr('name', $(this).attr('name').replace(/__name__/g, itemIndex));
+                            }
+                        });
+                        itemIndex++;
+                    });
+                });
+            })
+        });
+    </script>
+{% endblock %}

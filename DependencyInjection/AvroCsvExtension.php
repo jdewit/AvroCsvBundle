@@ -8,24 +8,36 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\Alias;
 
-/*
+/**
  * Bundle DIC Extension
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-class AvroCsvExtension extends Extension 
+class AvroCsvExtension extends Extension
 {
-    public function load(array $configs, ContainerBuilder $container) 
+    /**
+     * Load bundle config
+     *
+     * @param array            $configs   Config array
+     * @param ContainerBuilder $container The container builder
+     */
+    public function load(array $configs, ContainerBuilder $container)
     {
         $processor = new Processor();
         $configuration = new Configuration();
 
         $config = $processor->processConfiguration($configuration, $configs);
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('config.yml');
 
-        $container->setParameter('avro_csv.batch_size', $config['import']['batch_size']);
-        $container->setParameter('avro_csv.use_owner', $config['import']['use_owner']);
-        $container->setParameter('avro_csv.use_legacy_id', $config['import']['use_legacy_id']);
+        $loader->load(sprintf('%s.yml', $config['db_driver']));
+        $loader->load('services.yml');
+
+        $container->setParameter('avro_csv.batch_size', $config['batch_size']);
+        $container->setParameter('avro_csv.tmp_upload_dir', $config['tmp_upload_dir']);
+
+        foreach ($config['objects'] as $k => $v) {
+            $container->setParameter(sprintf('avro_csv.objects.%s.class', $k), $v['class']);
+            $container->setParameter(sprintf('avro_csv.objects.%s.redirect_route', $k), $v['redirect_route']);
+        }
     }
 }

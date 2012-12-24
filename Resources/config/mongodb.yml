@@ -1,0 +1,6 @@
+services:
+    avro_csv.importer:
+        class: Avro\CsvBundle\Doctrine\Importer
+        arguments: ["@avro_csv.reader", "@event_dispatcher", "@avro_case.converter", "@doctrine.odm.mongodb.entity_manager", "%avro_csv.batch_size%"]
+
+
