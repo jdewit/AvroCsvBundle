@@ -1,0 +1,11 @@
+services:
+    avro_csv.reader:
+        class: Avro\CsvBundle\Util\Reader
+        arguments: ["@avro_case.converter"]
+
+    avro_csv.writer:
+        class: Avro\CsvBundle\Util\Writer
+
+    avro_csv.field_retriever:
+        class: Avro\CsvBundle\Util\FieldRetriever
+        arguments: ["@annotation_reader", "@avro_case.converter"]

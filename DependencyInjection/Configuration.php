@@ -25,15 +25,20 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->arrayNode('import')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->booleanNode('use_legacy_id')->defaultFalse()->end()
-                        ->scalarNode('batch_size')->defaultValue('15')->end()
-                        ->scalarNode('use_owner')->defaultFalse()->end()
+                ->scalarNode('db_driver')->defaultValue('orm')->cannotBeEmpty()->end()
+                ->scalarNode('batch_size')->defaultValue('15')->cannotBeEmpty()->end()
+                ->scalarNode('tmp_upload_dir')->defaultValue('%kernel.root_dir%/../web/uploads/tmp/')->cannotBeEmpty()->end()
+                ->arrayNode('objects')
+                    ->useAttributeAsKey('object')->prototype('array')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('class')->isRequired()->end()
+                            ->scalarNode('redirect_route')->isRequired()->end()
+                        ->end()
                     ->end()
                 ->end()
-            ->end();
+            ->end()
+        ->end();
 
 
         return $treeBuilder;
