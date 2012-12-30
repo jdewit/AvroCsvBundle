@@ -38,12 +38,12 @@ Simply add it to your apps composer.json file
     "avro/csv-bundle": "*"
 ```
 
-Enable the bundle in the kernel:
+Enable the bundle in the kernel as well as the dependent AvroCaseBundle:
 
 ``` php
 // app/AppKernel.php
-
-    new Avro\CsvBundle\AvroCsvBundle
+    new Avro\CsvBundle\AvroCsvBundle(),
+    new Avro\CaseBundle\AvroCaseBundle()
 ```
 
 Configuration
