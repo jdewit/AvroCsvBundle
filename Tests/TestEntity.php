@@ -10,8 +10,6 @@ class TestEntity
 
     protected $field2;
 
-    protected $field3;
-
     public function getId()
     {
         return $this->id;
@@ -29,4 +27,14 @@ class TestEntity
     {
         $this->field1 = $field1;
     }
+
+    public function getField2()
+    {
+        return $this->field2;
+    }
+    public function setField2($field2)
+    {
+        $this->field2 = $field2;
+    }
+
 }

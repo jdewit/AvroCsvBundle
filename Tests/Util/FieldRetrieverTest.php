@@ -28,7 +28,6 @@ class FieldRetrieverTest extends \PHPUnit_Framework_TestCase
                 '0' => 'Id',
                 '1' => 'Field1',
                 '2' => 'Field2',
-                '3' => 'Field3',
             )
         );
     }
@@ -41,7 +40,6 @@ class FieldRetrieverTest extends \PHPUnit_Framework_TestCase
                 '0' => 'id',
                 '1' => 'field1',
                 '2' => 'field2',
-                '3' => 'field3',
             )
         );
     }
@@ -54,7 +52,6 @@ class FieldRetrieverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id',
                 'field1' => 'field1',
                 'field2' => 'field2',
-                'field3' => 'field3',
             )
         );
     }

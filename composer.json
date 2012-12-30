@@ -14,7 +14,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.2",
-        "avro/case-bundle": "dev-master"
+        "avro/case-bundle": "*"
     },
     "require-dev": {
         "twig/twig": "*",

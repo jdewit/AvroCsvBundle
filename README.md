@@ -19,8 +19,9 @@ solutions to skin that cat.
 Features
 --------
 
-- Import/export data by csv file
-- Map the fields in the csv to the entities/documents fields
+- Import data by csv file
+- Export data to csv file
+- A few services for reading/writing csv files
 
 Supports
 --------
@@ -55,6 +56,7 @@ avro_csv:
     db_driver: orm # supports orm
     batch_size: 15 # The batch size between flushing & clearing the doctrine object manager
     tmp_upload_dir: "%kernel.root_dir%/../web/uploads/tmp/" # The directory to upload the csv files to
+    sample_count: 5 # The number of sample rows to show during mapping
 ```
 
 Add routes to your app/config/routing.yml file
@@ -103,14 +105,19 @@ class Client
 
 ```
 
-Uploading A CSV
----------------
+Importing
+---------
 
-Navigate to the import page by adding a link like so:
+Implement importing for as many entities/documents as you like. All you have to do is 
+add them to the objects node as mentioned previously.
+
+Then just include a link to specific import page like so:
 
 ``` html
 <a href="{{ path('avro_csv_import_upload', {'alias': 'client'}) }}">Go to import page</a>
 ```
+
+Replace "client" with whatever alias you called your entity/document in the config.
 
 Views
 -----
@@ -185,15 +192,59 @@ services:
             - { name: kernel.event_listener, event: avro_csv.row_added, method: setCreatedBy }
 ```
 
+Exporting
+---------
+
+This bundle provides some simple exporting functionality. 
+
+Navigating to "/export/your-alias" will export all of your data to a csv and allow 
+you to download it from the browser.
+
+If you want to customize data returned, just create your own controller action and grab 
+the queryBuilder from the exporter and add your constraints before calling "getContent()". 
+
+Ex.
+
+``` php
+    /**
+     * Export a db table.
+     *
+     * @param string $alias The objects alias
+     *
+     * @return View
+     */
+    public function exportAction($alias)
+    {
+        $class = $this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias));
+
+        $exporter = $this->container->get('avro_csv.exporter');
+        $exporter->init($class);
+
+        // customize the query
+        $qb = $exporter->getQueryBuilder();
+        $qb->where('o.fieldName =? 1')->setParameter(1, false);
+
+        $content = $exporter->getContent();
+
+        $response = new Response($content);
+        $response->headers->set('Content-Type', 'application/csv');
+        $response->headers->set('Content-Disposition', sprintf('attachment; filename="%s.csv"', $alias));
+
+        return $response;
+    }
+
+```
+
 To Do:
 ------
 
-- More unit tests
 - Allow association mapping 
-- Add mongodb support
+- Finish mongodb support
 
 Acknowledgements
 ----------------
 
 Thanks to jwage's <a href="https://github.com/jwage/EasyCSV">EasyCSV</a> for some ground work.
 
+
+Feedback and pull requests are much appreciated!

@@ -1,11 +1,13 @@
 avro_csv_import_upload:
     pattern:   /import/upload/{alias}
     defaults:  { _controller: AvroCsvBundle:Import:upload }
-
 avro_csv_import_mapping:
     pattern:   /import/mapping/{alias}
     defaults:  { _controller: AvroCsvBundle:Import:mapping }
-
 avro_csv_import_process:
     pattern:   /import/process/{alias}
     defaults:  { _controller: AvroCsvBundle:Import:process }
+
+avro_csv_export_export:
+    pattern:   /export/{alias}
+    defaults:  { _controller: AvroCsvBundle:Export:export }

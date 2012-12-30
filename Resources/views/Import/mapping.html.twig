@@ -11,16 +11,21 @@
                     <tr>
                         <th>Your Column Headings</th>
                         <th>Field Mapping</th>
-                        <th>Preview</th>
+                        {% for row in rows %}
+                            <th>Sample {{ loop.index }}</th>
+                        {% endfor %}
                     </tr>
                 </thead>
                 <tbody class="collection">
                     {% set fieldChoice = form_widget(form.fields.vars['prototype']) %}
                     {% for header in headers %}
+                        {% set index = loop.index0 %}
                         <tr class="collection-item">
                             <td>{{ header }}</td>
                             <td>{{ fieldChoice | raw }}</td>
-                            <td>{{ row[loop.index0] }}</td>
+                            {% for row in rows %}
+                                <td>{{ row[index] }}</td>
+                            {% endfor %}
                         </tr>
                     {% endfor %}
                 </tbody>

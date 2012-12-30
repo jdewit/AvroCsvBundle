@@ -15,12 +15,12 @@ class Writer
     protected $line;
     protected $headers;
 
-    /*
+    /**
      * Open CSV file
      *
-     * @param $file 
+     * @param $file
      * @param $mode
-     * @param string $delimiter 
+     * @param string $delimiter
      * @param string $enclosure
      */
     public function open($file, $delimiter = ',', $mode = 'r+', $enclosure = '"')
@@ -32,13 +32,15 @@ class Writer
         $this->line = 0;
     }
 
-    /*
-     * Convert to CSV row
+    /**
+     * Convert array to CSV row
      *
-     * @param string or array $row The data to convert
-     * @param boolean Adds linebreak if true
+     * @param array   $row      The data to convert
+     * @param boolean $addBreak Adds linebreak if true
+     *
+     * @return array
      */
-    public function convertRow($row, $addBreak = true)
+    public function convertRow(array $row, $addBreak = true)
     {
         $formatValue = function($value) {
             if ($value instanceof \Datetime) {
@@ -48,14 +50,11 @@ class Writer
             return trim($value);
         };
 
-        if (is_array($row)) {
-            $row = array_map($formatValue, $row);
-        } else {
-            $row = explode(',', $row);
-            $row = array_map('trim', $row);
-        }
+        $row = implode(array_map($formatValue, $row), ',');
+
         if ($addBreak) {
-            $row = <<<EOT
+          $row = <<<EOT
+
 $row
 
 EOT;
@@ -64,10 +63,12 @@ EOT;
         return $row;
     }
 
-    /*
+    /**
      * Write a row in the CSV file
      *
-     * @param string or array $row The data to add to the CSV
+     * @param string|array $row The data to add to the CSV
+     *
+     * @return array
      */
     public function writeRow($row)
     {
@@ -79,7 +80,7 @@ EOT;
     /*
      * Write an arrow of data to the CSV file
      *
-     * @param array $array An array of data to write 
+     * @param array $array An array of data to write
      */
     public function writeFromArray(array $array)
     {

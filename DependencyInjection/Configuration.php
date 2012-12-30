@@ -28,6 +28,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('db_driver')->defaultValue('orm')->cannotBeEmpty()->end()
                 ->scalarNode('batch_size')->defaultValue('15')->cannotBeEmpty()->end()
                 ->scalarNode('tmp_upload_dir')->defaultValue('%kernel.root_dir%/../web/uploads/tmp/')->cannotBeEmpty()->end()
+                ->scalarNode('sample_count')->defaultValue(1)->cannotBeEmpty()->end()
                 ->arrayNode('objects')
                     ->useAttributeAsKey('object')->prototype('array')
                         ->addDefaultsIfNotSet()

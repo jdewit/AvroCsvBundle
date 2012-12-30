@@ -54,6 +54,26 @@ class Reader
     }
 
     /**
+     * Get an array of rows
+     *
+     * @param int $count The number of rows to return
+     *
+     * @return array of row
+     */
+    public function getRows($count)
+    {
+        $rows = array();
+        for ($i=0; $i < $count; $i++) {
+            $row = $this->getRow();
+            if ($row) {
+                $rows[] = $row;
+            }
+        }
+
+        return $rows;
+    }
+
+    /**
      * Return entire table
      *
      * @return array $data

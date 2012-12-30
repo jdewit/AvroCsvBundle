@@ -68,18 +68,19 @@ class ImportController extends ContainerAware
                 $reader->open(sprintf('%s%s', $tmpUploadDir, $filename), $form['delimiter']->getData());
 
                 $headers = $this->container->get('avro_case.converter')->toTitleCase($reader->getHeaders());
-                $row = $reader->getRow();
+
+                $rows = $reader->getRows($this->container->getParameter('avro_csv.sample_count'));
 
                 return $this->container->get('templating')->renderResponse('AvroCsvBundle:Import:mapping.html.twig', array(
                     'form' => $form->createView(),
                     'alias' => $alias,
                     'headers' => $headers,
                     'headersJson' => json_encode($headers, JSON_FORCE_OBJECT),
-                    'row' => $row
+                    'rows' => $rows
                 ));
             }
         } else {
-            return new RedirectResponse($this->container->get('router')->generate($this->container->getParameter('avro_csv.objects.%s.redirect_route', $alias)));
+            return new RedirectResponse($this->container->get('router')->generate($this->container->getParameter(sprintf('avro_csv.objects.%s.redirect_route', $alias))));
         }
     }
 

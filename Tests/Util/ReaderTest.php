@@ -54,6 +54,25 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testGetRows()
+    {
+        $this->assertEquals(
+            array(
+                0 => array(
+                    0 => 'row1column1',
+                    1 => 'row1column2',
+                    2 => 'row1column3',
+                ),
+                1 => array(
+                    0 => 'row2column1',
+                    1 => 'row2column2',
+                    2 => 'row2column3',
+                ),
+            ),
+            $this->reader->getRows(2)
+        );
+    }
+
     public function testGetAll()
     {
         $this->assertEquals(3, count($this->reader->getAll()));
