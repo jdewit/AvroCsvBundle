@@ -88,11 +88,6 @@ class Importer
         while ($row = $this->reader->getRow()) {
             ++$this->importCount;
             $this->addRow($row, $fields, $fieldIndexes, (($this->importCount % $this->batchSize) == 0));
-            //if (($this->importCount % $this->batchSize) == 0) {
-            //    $this->addRow($row, $fields, true);
-            //} else {
-            //    $this->addRow($row, $fields, false);
-            //}
         }
 
         // one last flush to make sure no persisted objects get left behind
@@ -148,8 +143,6 @@ class Importer
         // loop through fields and set to row value
         foreach ($fields as $k => $v) {
             if ($this->metadata->hasField(lcfirst($v))) {
-                //$entity->{'set'.$fields[$k]}($row[$k]);
-                //echo '<pre>Calling set'.$v.'('.$row[$k].')<br/>';
                 $entity->{'set'.$v}($row[$k]);
             } else if ($this->metadata->hasAssociation(lcfirst($v))) {
                 $association = $this->metadata->associationMappings[lcfirst($v)];
