@@ -5,6 +5,7 @@ namespace Avro\CsvBundle\Util;
 use Doctrine\Common\Annotations\AnnotationReader;
 
 use Avro\CsvBundle\Annotation\ImportExclude;
+use Avro\CsvBundle\Annotation\ImportIndex;
 use Avro\CaseBundle\Util\CaseConverter;
 
 /**
@@ -35,7 +36,7 @@ class FieldRetriever
      * @param string  $format    The desired field case format
      * @param boolean $copyToKey Copy the field values to their respective key
      *
-     * @return array $fields
+     * @return array(array $fields, array $indexFields)
      */
     public function getFields($class, $format = 'title', $copyToKey = false)
     {
@@ -43,11 +44,15 @@ class FieldRetriever
         $properties = $reflectionClass->getProperties();
 
         $fields = array();
+        $fieldIndexes = array();
         foreach ($properties as $property) {
             $addField = true;
             foreach ($this->annotationReader->getPropertyAnnotations($property) as $annotation) {
                 if ($annotation instanceof ImportExclude) {
                     $addField = false;
+                }
+                if ($annotation instanceof ImportIndex) {
+                    $fieldIndexes[] = $this->caseConverter->convert($property->getName(), $format);
                 }
             }
 
@@ -58,8 +63,9 @@ class FieldRetriever
 
         if ($copyToKey) {
             $fields = array_combine($fields, $fields);
+            $fieldIndexes = array_combine($fieldIndexes, $fieldIndexes);
         }
 
-        return $fields;
+        return array($fields, $fieldIndexes);
     }
 }

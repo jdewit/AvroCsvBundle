@@ -34,7 +34,6 @@
                 {{ form_row(form.delimiter) }}
                 {{ form_row(form.filename) }}
             </div>
-            <table class="table-styled table-bordered table-striped table-rounded">
             {{ form_widget(form._token) }}
         </div>
         <div class="form-actions">
@@ -42,6 +41,9 @@
             <a href="{{ path('avro_csv_import_upload', {'alias': alias}) }}" class="btn"><i class="icon-arrow-left"></i> Back</a>
         </div>
     </form>
+{% endblock %}
+{% block javascripts %}
+{{ parent() }}
     <script type="text/javascript">
         $(document).ready(function() {
             var headers = {{ headersJson | raw }};
@@ -68,3 +70,4 @@
         });
     </script>
 {% endblock %}
+

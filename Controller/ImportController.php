@@ -29,7 +29,7 @@ class ImportController extends ContainerAware
      */
     public function uploadAction($alias)
     {
-        $fieldChoices = $this->container->get('avro_csv.field_retriever')->getFields($this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)), 'title', true);
+        list($fieldChoices, $fieldIndexes) = $this->container->get('avro_csv.field_retriever')->getFields($this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)), 'title', true);
 
         $form = $this->container->get('form.factory')->create(new ImportFormType(), null, array('field_choices' => $fieldChoices));
 
@@ -49,8 +49,10 @@ class ImportController extends ContainerAware
      */
     public function mappingAction(Request $request, $alias)
     {
-        $fieldChoices = $this->container->get('avro_csv.field_retriever')->getFields($this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)), 'title', true);
+        list($fieldChoices, $fieldIndexes) = $this->container->get('avro_csv.field_retriever')->getFields($this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)), 'title', true);
 
+        // prepend blank choice into choices array
+        array_unshift($fieldChoices, '');
         $form = $this->container->get('form.factory')->create(new ImportFormType(), null, array('field_choices' => $fieldChoices));
 
         if ('POST' == $request->getMethod()) {
@@ -94,8 +96,9 @@ class ImportController extends ContainerAware
      */
     public function processAction(Request $request, $alias)
     {
-        $fieldChoices = $this->container->get('avro_csv.field_retriever')->getFields($this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)), 'title', true);
-
+        list($fieldChoices, $fieldIndexes) = $this->container->get('avro_csv.field_retriever')->getFields($this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)), 'title', true);
+        // prepend blank choice into choices array
+        array_unshift($fieldChoices, '');
         $form = $this->container->get('form.factory')->create(new ImportFormType(), null, array('field_choices' => $fieldChoices));
 
         if ('POST' == $request->getMethod()) {
@@ -106,7 +109,7 @@ class ImportController extends ContainerAware
 
                 $importer->init(sprintf('%s%s', $this->container->getParameter('avro_csv.tmp_upload_dir'), $form['filename']->getData()), $this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias), $form['delimiter']->getData()));
 
-                $importer->import($form['fields']->getData());
+                $importer->import($form['fields']->getData(), $fieldIndexes);
 
                 $this->container->get('session')->getFlashBag()->set('success', $importer->getImportCount().' items imported.');
 

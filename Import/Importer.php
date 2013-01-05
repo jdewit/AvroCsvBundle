@@ -72,17 +72,27 @@ class Importer
      *
      * @return true if successful
      */
-    public function import($fields)
+    public function import($fields, $fieldIndexes)
     {
         $fields = array_unique($this->caseConverter->toPascalCase($fields));
+        $indexes = array_unique($this->caseConverter->toPascalCase($fieldIndexes));
+
+        // make keys for both arrays match
+        $fieldIndexes = array();
+        foreach ($indexes as $k => $v)
+        {
+            $i = array_search($v, $fields);
+            $fieldIndexes[$i] = $v;
+        }
 
         while ($row = $this->reader->getRow()) {
-            if (($this->importCount % $this->batchSize) == 0) {
-                $this->addRow($row, $fields, true);
-            } else {
-                $this->addRow($row, $fields, false);
-            }
-            $this->importCount++;
+            ++$this->importCount;
+            $this->addRow($row, $fields, $fieldIndexes, (($this->importCount % $this->batchSize) == 0));
+            //if (($this->importCount % $this->batchSize) == 0) {
+            //    $this->addRow($row, $fields, true);
+            //} else {
+            //    $this->addRow($row, $fields, false);
+            //}
         }
 
         // one last flush to make sure no persisted objects get left behind
@@ -98,11 +108,35 @@ class Importer
      * @param array   $fields   An array of the fields to import
      * @param boolean $andFlush Flush the ObjectManager
      */
-    private function addRow($row, $fields, $andFlush = true)
+    private function addRow($row, $fields, $fieldIndexes, $andFlush = true)
     {
-        // Create new entity
-        $entity = new $this->class();
+        // If we have indexes, try to find a record that matches and load it...
+        if (count($fieldIndexes) > 0)
+        {
+            //echo "<pre> fields = "; var_dump($fields);
+            //echo "<pre> fieldIndexes = "; var_dump($fieldIndexes);
+            //echo "<pre> row = "; var_dump($row);
 
+            $criteria = array();
+            foreach ($fieldIndexes as $k => $v)
+            {
+                $criteria[lcfirst($v)] = $row[$k];
+            }
+            //echo "<pre> criteria = "; var_dump($criteria);
+            $entity = $this->objectManager->getRepository($this->class)->findOneBy($criteria);
+        }
+
+        // if we don't have indexes, or we didn't get a match, create a new entity.        
+        if (!isset($entity))
+        {
+            //echo "<pre> entity not found<br/>\n";
+            // Create new entity
+            $entity = new $this->class();
+        }
+        //else
+        //{
+        //    echo "<pre> id = ".$entity->getId() . "<br/>\n";
+        //}
         if (in_array('Id', $fields)) {
             $key = array_search('Id', $fields);
             if ($this->metadata->hasField('legacyId')) {
@@ -114,7 +148,9 @@ class Importer
         // loop through fields and set to row value
         foreach ($fields as $k => $v) {
             if ($this->metadata->hasField(lcfirst($v))) {
-                $entity->{'set'.$fields[$k]}($row[$k]);
+                //$entity->{'set'.$fields[$k]}($row[$k]);
+                //echo '<pre>Calling set'.$v.'('.$row[$k].')<br/>';
+                $entity->{'set'.$v}($row[$k]);
             } else if ($this->metadata->hasAssociation(lcfirst($v))) {
                 $association = $this->metadata->associationMappings[lcfirst($v)];
                 switch ($association['type']) {
