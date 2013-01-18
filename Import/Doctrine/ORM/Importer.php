@@ -20,11 +20,12 @@ class Importer extends AbstractImporter
     /**
      * Add Csv row to db
      *
-     * @param array   $row      An array of data
-     * @param array   $fields   An array of the fields to import
-     * @param boolean $andFlush Flush the ObjectManager
+     * @param array   $row        An array of data
+     * @param array   $fields     An array of the fields to import
+     * @param string  $dateFormat Date format
+     * @param boolean $andFlush   Flush the ObjectManager
      */
-    protected function addRow($row, $fields, $andFlush = true)
+    protected function addRow($row, $fields, $dateFormat, $andFlush = true)
     {
         // Create new entity
         $entity = new $this->class();
@@ -39,10 +40,20 @@ class Importer extends AbstractImporter
 
         // loop through fields and set to row value
         foreach ($fields as $k => $v) {
-            if ($this->metadata->hasField(lcfirst($v))) {
-                $entity->{'set'.$fields[$k]}($row[$k]);
-            } else if ($this->metadata->hasAssociation(lcfirst($v))) {
-                $association = $this->metadata->associationMappings[lcfirst($v)];
+            $fieldName = lcfirst($v);
+            if ($this->metadata->hasField($fieldName)) {
+                $value = $row[$k];
+                switch ($this->metadata->getTypeOfField($fieldName)) {
+                    case 'datetime':
+                        $value = \DateTime::createFromFormat($dateFormat, $row[$k]);
+                        break;
+                    default:
+                        $value = $row[$k];
+                        break;
+                }
+                $entity->{'set'.$fields[$k]}($value);
+            } else if ($this->metadata->hasAssociation($fieldName)) {
+                $association = $this->metadata->associationMappings[$fieldName];
                 switch ($association['type']) {
                     case '1': // oneToOne
                         //Todo:

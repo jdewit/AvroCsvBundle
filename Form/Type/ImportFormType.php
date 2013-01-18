@@ -47,6 +47,14 @@ class ImportFormType extends AbstractType
                     'choices' => $options['field_choices']
                 ),
                 'allow_add' => true
+            ))
+            ->add('dateFormat', 'choice', array(
+                'label' => 'DateFormat',
+                'choices' => array(
+                    'Y-m-d' => 'yyyy-mm-dd',
+                    'm/d/Y' => 'mm/dd/yyyy',
+                    'd/m/Y' => 'dd/mm/yyyy',
+                )
             ));
 
         $builder->addEventListener(FormEvents::PRE_BIND, function (DataEvent $event) {

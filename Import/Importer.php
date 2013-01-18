@@ -68,20 +68,23 @@ abstract class Importer implements ImporterInterface
     /**
      * Import the csv and persist to database
      *
-     * @param array $fields The fields to persist
+     * @param array  $fields     The fields to persist
+     * @param string $dateFormat The date format for any datetime fields
      *
      * @return true if successful
      */
-    public function import($fields)
+    public function import($fields, $dateFormat)
     {
         $fields = array_unique($this->caseConverter->toPascalCase($fields));
 
         while ($row = $this->reader->getRow()) {
             if (($this->importCount % $this->batchSize) == 0) {
-                $this->addRow($row, $fields, true);
+                $flush = true;
             } else {
-                $this->addRow($row, $fields, false);
+                $flush = false;
             }
+
+            $this->addRow($row, $fields, $dateFormat, $flush);
             $this->importCount++;
         }
 

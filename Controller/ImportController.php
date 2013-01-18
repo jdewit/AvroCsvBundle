@@ -106,7 +106,7 @@ class ImportController extends ContainerAware
 
                 $importer->init(sprintf('%s%s', $this->container->getParameter('avro_csv.tmp_upload_dir'), $form['filename']->getData()), $this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias), $form['delimiter']->getData()));
 
-                $importer->import($form['fields']->getData());
+                $importer->import($form['fields']->getData(), $form['dateFormat']->getData());
 
                 $this->container->get('session')->getFlashBag()->set('success', $importer->getImportCount().' items imported.');
 

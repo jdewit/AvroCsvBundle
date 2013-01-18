@@ -58,7 +58,7 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             true,
-            $this->importer->import($this->fields)
+            $this->importer->import($this->fields, 'Y-m-d')
         );
     }
 
@@ -67,7 +67,7 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function testImportCount()
     {
-        $this->importer->import($this->fields);
+        $this->importer->import($this->fields, 'Y-m-d');
 
         $this->assertEquals(
             3,
