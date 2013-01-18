@@ -18,7 +18,7 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $query = $this->getMock('Doctrine\ORM\Query', array('iterate', 'HYDRATE_ARRAY'), array(), '', false);
+        $query = $this->getMock('Avro\CsvBundle\Tests\Export\Query', array('iterate'), array(), '', false);
         $query->expects($this->any())
             ->method('iterate')
             ->will($this->returnValue(array(0 => array(0 => array('row 1' => 'val\'1', 'row 2' => 'val,2', 'row 3' => 'val"3')))));
@@ -26,9 +26,6 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
         $queryBuilder = $this->getMock('Doctrine\ORM\QueryBuilder', array('select', 'from', 'getQuery'), array(), '', false);
         $queryBuilder->expects($this->any())
             ->method('select')
-            ->will($this->returnValue($queryBuilder));
-        $queryBuilder->expects($this->any())
-            ->method('from')
             ->will($this->returnValue($queryBuilder));
         $queryBuilder->expects($this->any())
             ->method('from')
@@ -44,6 +41,7 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($queryBuilder));
 
         $this->exporter = new Exporter($entityManager);
+        $this->exporter->init('Avro\CsvBundle\Tests\Fixtures\ORM\TestEntity');
     }
 
     /**
@@ -51,7 +49,6 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
      */
     public function testInit()
     {
-        $this->exporter->init('Avro\CsvBundle\Tests\TestEntity');
         $this->assertTrue($this->exporter->getQueryBuilder() instanceof QueryBuilder);
     }
 
@@ -76,11 +73,18 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
         $expected .= '"val\'1","val,2","val""3"';
         $expected .= "\n";
 
-        $this->exporter->init('Avro\CsvBundle\Tests\TestEntity');
         $this->assertEquals(
             $expected,
             $this->exporter->getContent()
         );
+    }
+
+}
+
+class Query
+{
+    protected function iterate()
+    {
     }
 
 }

@@ -18,9 +18,10 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             array(
-                0 => 'Header 1',
-                1 => 'Header 2',
-                2 => 'Header 3',
+                0 => 'Id',
+                1 => 'String Field',
+                2 => 'Integer Field',
+                3 => 'Date Field',
             ),
             $this->reader->getHeaders()
         );
@@ -30,25 +31,28 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             array(
-                0 => 'row1column1',
-                1 => 'row1column2',
-                2 => 'row1column3',
+                0 => '1',
+                1 => 'string 1',
+                2 => '11',
+                3 => '2012-01-01'
             ),
             $this->reader->getRow()
         );
         $this->assertEquals(
             array(
-                0 => 'row2column1',
-                1 => 'row2column2',
-                2 => 'row2column3',
+                0 => '5',
+                1 => 'string 2',
+                2 => '22',
+                3 => '2012-02-02'
             ),
             $this->reader->getRow()
         );
         $this->assertEquals(
             array(
-                0 => 'row3column1',
-                1 => 'row3column2',
-                2 => 'row3column3',
+                0 => '10',
+                1 => 'string 3',
+                2 => '33',
+                3 => '2012-03-03'
             ),
             $this->reader->getRow()
         );
@@ -59,14 +63,16 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(
                 0 => array(
-                    0 => 'row1column1',
-                    1 => 'row1column2',
-                    2 => 'row1column3',
+                    0 => '1',
+                    1 => 'string 1',
+                    2 => '11',
+                    3 => '2012-01-01'
                 ),
                 1 => array(
-                    0 => 'row2column1',
-                    1 => 'row2column2',
-                    2 => 'row2column3',
+                    0 => '5',
+                    1 => 'string 2',
+                    2 => '22',
+                    3 => '2012-02-02'
                 ),
             ),
             $this->reader->getRows(2)

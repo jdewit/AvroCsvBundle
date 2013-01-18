@@ -18,6 +18,8 @@
     },
     "require-dev": {
         "twig/twig": "*",
+        "doctrine/orm": ">=2.2.3,<2.4-dev",
+        "doctrine/mongodb-odm-bundle": "3.0.*",
         "doctrine/doctrine-bundle": "*"
     },
     "autoload": {

@@ -21,7 +21,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-class Importer
+abstract class Importer implements ImporterInterface
 {
     protected $fields;
     protected $metadata;
@@ -68,20 +68,23 @@ class Importer
     /**
      * Import the csv and persist to database
      *
-     * @param array $fields The fields to persist
+     * @param array  $fields     The fields to persist
+     * @param string $dateFormat The date format for any datetime fields
      *
      * @return true if successful
      */
-    public function import($fields)
+    public function import($fields, $dateFormat)
     {
         $fields = array_unique($this->caseConverter->toPascalCase($fields));
 
         while ($row = $this->reader->getRow()) {
             if (($this->importCount % $this->batchSize) == 0) {
-                $this->addRow($row, $fields, true);
+                $flush = true;
             } else {
-                $this->addRow($row, $fields, false);
+                $flush = false;
             }
+
+            $this->addRow($row, $fields, $dateFormat, $flush);
             $this->importCount++;
         }
 
@@ -89,81 +92,6 @@ class Importer
         $this->objectManager->flush();
 
         return true;
-    }
-
-    /**
-     * Add Csv row to db
-     *
-     * @param array   $row      An array of data
-     * @param array   $fields   An array of the fields to import
-     * @param boolean $andFlush Flush the ObjectManager
-     */
-    private function addRow($row, $fields, $andFlush = true)
-    {
-        // Create new entity
-        $entity = new $this->class();
-
-        if (in_array('Id', $fields)) {
-            $key = array_search('Id', $fields);
-            if ($this->metadata->hasField('legacyId')) {
-                $entity->setLegacyId($row[$key]);
-            }
-            unset($fields[$key]);
-        }
-
-        // loop through fields and set to row value
-        foreach ($fields as $k => $v) {
-            if ($this->metadata->hasField(lcfirst($v))) {
-                $entity->{'set'.$fields[$k]}($row[$k]);
-            } else if ($this->metadata->hasAssociation(lcfirst($v))) {
-                $association = $this->metadata->associationMappings[lcfirst($v)];
-                switch ($association['type']) {
-                    case '1': // oneToOne
-                        //Todo:
-                        break;
-                    case '2': // manyToOne
-                        continue;
-                        // still needs work
-                        $joinColumnId = $association['joinColumns'][0]['name'];
-                        $legacyId = $row[array_search($this->caseConverter->toCamelCase($joinColumnId), $this->headers)];
-                        if ($legacyId) {
-                            try {
-                                $criteria = array('legacyId' => $legacyId);
-                                if ($this->useOwner) {
-                                    $criteria['owner'] = $this->owner->getId();
-                                }
-
-                                $associationClass = new \ReflectionClass($association['targetEntity']);
-                                if ($associationClass->hasProperty('legacyId')) {
-                                    $relation = $this->objectManager->getRepository($association['targetEntity'])->findOneBy($criteria);
-                                    if ($relation) {
-                                        $entity->{'set'.ucfirst($association['fieldName'])}($relation);
-                                    }
-                                }
-                            } catch(\Exception $e) {
-                                // legacyId does not exist
-                                // fail silently
-                            }
-                        }
-                        break;
-                    case '4': // oneToMany
-                        //TODO:
-                        break;
-                    case '8': // manyToMany
-                        //TODO:
-                        break;
-                }
-            }
-        }
-
-        $this->dispatcher->dispatch('avro_csv.row_added', new RowAddedEvent($entity, $row, $fields));
-
-        $this->objectManager->persist($entity);
-
-        if ($andFlush) {
-            $this->objectManager->flush();
-            $this->objectManager->clear($this->class);
-        }
     }
 
     /**

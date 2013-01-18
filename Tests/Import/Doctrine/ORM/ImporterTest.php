@@ -1,9 +1,9 @@
 <?php
 
-namespace Avro\CsvBundle\Tests\Import;
+namespace Avro\CsvBundle\Tests\Import\Doctrine\ORM;
 
 use Avro\CaseBundle\Util\CaseConverter;
-use Avro\CsvBundle\Import\Importer;
+use Avro\CsvBundle\Import\Doctrine\ORM\Importer;
 use Avro\CsvBundle\Util\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -24,33 +24,31 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $fields = array('id', 'field1', 'field2');
-
-        $this->fields = $fields;
+        $this->fields = $fields = array('id', 'stringField', 'integerField', 'dateField');
 
         $caseConverter = new CaseConverter();
         $reader = new Reader();
 
         $metadata = $this->getMockForAbstractClass('Doctrine\Common\Persistence\Mapping\ClassMetadata', array('hasField'));
-        $metadata->expects($this->any())
+        $metadata->expects($this->atLeastOnce())
             ->method('hasField')
             ->will($this->returnCallback(function($value) use ($fields){
                 return in_array($value, $fields);
             }));
 
         $objectManager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
-        $objectManager->expects($this->any())
+        $objectManager->expects($this->atLeastOnce())
             ->method('getClassMetadata')
             ->will($this->returnValue($metadata));
 
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $dispatcher->expects($this->any())
+        $dispatcher->expects($this->atLeastOnce())
             ->method('dispatch')
             ->will($this->returnValue('true'));
 
         $this->importer = new Importer($reader, $dispatcher, $caseConverter, $objectManager, 5);
 
-        $this->importer->init(__DIR__ . '/../import.csv', 'Avro\CsvBundle\Tests\TestEntity', ',', 'title');
+        $this->importer->init(__DIR__ . '/../../../import.csv', 'Avro\CsvBundle\Tests\Fixtures\ORM\TestEntity');
     }
 
     /**
@@ -60,8 +58,16 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             true,
-            $this->importer->import($this->fields)
+            $this->importer->import($this->fields, 'Y-m-d')
         );
+    }
+
+    /**
+     * Test number of row imported
+     */
+    public function testImportCount()
+    {
+        $this->importer->import($this->fields, 'Y-m-d');
 
         $this->assertEquals(
             3,
