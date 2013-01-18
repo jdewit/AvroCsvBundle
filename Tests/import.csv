@@ -1,4 +1,4 @@
-"Header 1", "Header 2", "Header 3"
-"row1column1", "row1column2", "row1column3"
-"row2column1", "row2column2", "row2column3"
-"row3column1", "row3column2", "row3column3"
+"Id", "String Field", "Integer Field", "Date Field"
+"1", "string 1", "11", "2012-01-01"
+"5", "string 2", "22", "2012-02-02"
+"10", "string 3", "33", "2012-03-03"
