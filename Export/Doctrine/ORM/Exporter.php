@@ -10,6 +10,7 @@ namespace Avro\CsvBundle\Export\Doctrine\ORM;
 use Avro\CaseBundle\Util\Converter;
 
 use Avro\CsvBundle\Export\Exporter as BaseExporter;
+use Avro\CsvBundle\Export\ExporterInterface;
 
 use Doctrine\ORM\EntityManager;
 
@@ -18,7 +19,7 @@ use Doctrine\ORM\EntityManager;
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-class Exporter extends BaseExporter
+class Exporter extends BaseExporter implements ExporterInterface
 {
     protected $entityManager;
 

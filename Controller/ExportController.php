@@ -14,10 +14,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\DependencyInjection\ContainerAware;
 
-use Avro\CsvBundle\Form\Type\ImportFormType;
+use Avro\CsvBundle\Event\ExportEvent;
+use Avro\CsvBundle\Event\ExportedEvent;
 
 /**
- * Csv Export controller.
+ * CSV Export controller.
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
@@ -37,7 +38,12 @@ class ExportController extends ContainerAware
         $exporter = $this->container->get('avro_csv.exporter');
         $exporter->init($class);
 
+        $dispatcher = $this->container->get('event_dispatcher');
+        $dispatcher->dispatch('avro_csv.exporter_export', new ExportEvent($exporter));
+
         $content = $exporter->getContent();
+
+        $dispatcher->dispatch('avro_csv.exporter_exported', new ExportedEvent($content));
 
         $response = new Response($content);
         $response->headers->set('Content-Type', 'application/csv');
