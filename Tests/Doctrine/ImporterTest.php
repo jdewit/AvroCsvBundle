@@ -40,7 +40,6 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
 
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
-        $context = $this->getMock('Symfony\Component\Security\Core\SecurityContext');
         $class = 'Avro\CsvBundle\Tests\TestEntity';
 
         $this->importer = new Importer($reader, $dispatcher, $caseConverter, $objectManager, 5);
