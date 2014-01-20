@@ -3,7 +3,7 @@ namespace Avro\CsvBundle\Form\Type;
 
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Event\DataEvent;
+use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -49,7 +49,7 @@ class ImportFormType extends AbstractType
                 'allow_add' => true
             ));
 
-        $builder->addEventListener(FormEvents::PRE_BIND, function (DataEvent $event) {
+        $builder->addEventListener(FormEvents::PRE_BIND, function (FormEvent $event) {
             $data = $event->getData();
 
             if (!$data || !array_key_exists('file', $data)) {
