@@ -123,7 +123,14 @@ Views
 -----
 
 The bundle comes with some basic twitter bootstrap views that you can 
-override by extending the bundle.
+change by defining new ones in config.
+
+```yaml
+avro_csv:
+    views:
+        upload: AvroCsvBundle:Import:upload.html.twig
+        mapping: AvroCsvBundle:Import:mapping.html.twig
+```
 
 Customizing each row
 --------------------
