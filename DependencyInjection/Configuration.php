@@ -30,6 +30,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('tmp_upload_dir')->defaultValue('%kernel.root_dir%/../web/uploads/tmp/')->cannotBeEmpty()->end()
                 ->scalarNode('sample_count')->defaultValue(1)->cannotBeEmpty()->end()
                 ->arrayNode('views')
+                    ->addDefaultsIfNotSet()
                     ->children()
                         ->scalarNode('upload')->defaultValue('AvroCsvBundle:Import:upload.html.twig')->cannotBeEmpty()->end()
                         ->scalarNode('mapping')->defaultValue('AvroCsvBundle:Import:mapping.html.twig')->cannotBeEmpty()->end()
