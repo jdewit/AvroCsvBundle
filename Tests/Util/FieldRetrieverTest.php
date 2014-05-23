@@ -1,15 +1,25 @@
 <?php
 
+/**
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Avro\CsvBundle\Tests\Util;
 
-use Avro\CsvBundle\Util\FieldRetriever;
 use Avro\CaseBundle\Util\CaseConverter;
-
+use Avro\CsvBundle\Util\FieldRetriever;
 use Doctrine\Common\Annotations\AnnotationReader;
 
 class FieldRetrieverTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var FieldRetriever
+     */
     protected $fieldRetriever;
+    /**
+     * @var string
+     */
     protected $class;
 
     public function setUp()
@@ -55,5 +65,4 @@ class FieldRetrieverTest extends \PHPUnit_Framework_TestCase
             )
         );
     }
-
 }

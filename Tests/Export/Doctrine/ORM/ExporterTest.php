@@ -1,24 +1,28 @@
 <?php
 
+/**
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Avro\CsvBundle\Tests\Export\Doctrine\ORM;
 
 use Avro\CsvBundle\Export\Doctrine\ORM\Exporter;
-
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * Test exporter class
+ * Test exporter class.
  */
 class ExporterTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Setup test class
-     *
-     * @return nothing
+     * @var Exporter
      */
+    protected $exporter;
+
     public function setUp()
     {
-        $query = $this->getMock('Doctrine\ORM\Query', array('iterate', 'HYDRATE_ARRAY'), array(), '', false);
+        $query = $this->getMock('Doctrine\ORM\AbstractQuery', array('iterate', 'HYDRATE_ARRAY', 'getSQL', '_doExecute'), array(), '', false);
         $query->expects($this->any())
             ->method('iterate')
             ->will($this->returnValue(array(0 => array(0 => array('row 1' => 'val\'1', 'row 2' => 'val,2', 'row 3' => 'val"3')))));
@@ -47,7 +51,7 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test init
+     * Test init.
      */
     public function testInit()
     {
@@ -56,18 +60,18 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test convert row
+     * Test convert row.
      */
     public function testArrayToCsv()
     {
         $this->assertEquals(
-            '"val\'1","val,2","val""3"' . "\n",
+            '"val\'1","val,2","val""3"'."\n",
             $this->exporter->arrayToCsv(array('val\'1', 'val,2', 'val"3'))
         );
     }
 
     /**
-     * Test convert row
+     * Test convert row.
      */
     public function testGetContent()
     {
@@ -82,5 +86,4 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
             $this->exporter->getContent()
         );
     }
-
 }

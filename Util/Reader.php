@@ -1,10 +1,14 @@
 <?php
-namespace Avro\CsvBundle\Util;
-
-use Avro\CaseBundle\Util\CaseConverter;
 
 /**
- * Read a CSV file
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Avro\CsvBundle\Util;
+
+/**
+ * Read a CSV file.
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
@@ -17,13 +21,13 @@ class Reader
     protected $headers;
 
     /**
-     * Open a CSV file
+     * Open a CSV file.
      *
-     * @param string  $file       The file path
-     * @param string  $delimiter  The CSV's delimiter
-     * @param string  $mode       fopen mode
-     * @param string  $enclosure  The enclosure
-     * @param boolean $hasHeaders Does the CSV have any headers?
+     * @param string $file       The file path
+     * @param string $delimiter  The CSV's delimiter
+     * @param string $mode       fopen mode
+     * @param string $enclosure  The enclosure
+     * @param bool   $hasHeaders Does the CSV have any headers?
      */
     public function open($file, $delimiter = ',', $mode = 'r+', $enclosure = '"', $hasHeaders = true)
     {
@@ -38,14 +42,14 @@ class Reader
     }
 
     /**
-     * Return a row
+     * Return a row.
      *
      * @return array or false
      */
     public function getRow()
     {
         if (($row = fgetcsv($this->handle, 1000, $this->delimiter, $this->enclosure)) !== false) {
-            $this->line++;
+            ++$this->line;
 
             return $row;
         } else {
@@ -54,7 +58,7 @@ class Reader
     }
 
     /**
-     * Get an array of rows
+     * Get an array of rows.
      *
      * @param int $count The number of rows to return
      *
@@ -63,7 +67,7 @@ class Reader
     public function getRows($count)
     {
         $rows = array();
-        for ($i=0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; ++$i) {
             $row = $this->getRow();
             if ($row) {
                 $rows[] = $row;
@@ -74,7 +78,7 @@ class Reader
     }
 
     /**
-     * Return entire table
+     * Return entire table.
      *
      * @return array $data
      */
@@ -89,7 +93,7 @@ class Reader
     }
 
     /**
-     * Get headers
+     * Get headers.
      *
      * @return array
      */
@@ -99,7 +103,7 @@ class Reader
     }
 
     /**
-     * Close file
+     * Close file.
      */
     public function __destruct()
     {
@@ -107,5 +111,4 @@ class Reader
             fclose($this->handle);
         }
     }
-
 }

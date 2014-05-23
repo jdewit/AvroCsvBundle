@@ -7,11 +7,11 @@
 
 namespace Avro\CsvBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\DependencyInjection\ContainerAware;
-
 use Avro\CsvBundle\Form\Type\ImportFormType;
+use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Csv Import controller.
@@ -25,7 +25,7 @@ class ImportController extends ContainerAware
      *
      * @param string $alias The objects alias
      *
-     * @return View
+     * @return Response
      */
     public function uploadAction($alias)
     {
@@ -35,7 +35,7 @@ class ImportController extends ContainerAware
 
         return $this->container->get('templating')->renderResponse('AvroCsvBundle:Import:upload.html.twig', array(
             'form' => $form->createView(),
-            'alias' => $alias
+            'alias' => $alias,
         ));
     }
 
@@ -45,7 +45,7 @@ class ImportController extends ContainerAware
      * @param Request $request The request
      * @param string  $alias   The objects alias
      *
-     * @return view
+     * @return Response
      */
     public function mappingAction(Request $request, $alias)
     {
@@ -54,7 +54,11 @@ class ImportController extends ContainerAware
         $form = $this->container->get('form.factory')->create(new ImportFormType(), null, array('field_choices' => $fieldChoices));
 
         if ('POST' == $request->getMethod()) {
-            $form->bind($request);
+            if (method_exists($form, 'handleRequest')) {
+                $form->handleRequest($request);
+            } else {
+                $form->bind($request);
+            }
             if ($form->isValid()) {
                 $reader = $this->container->get('avro_csv.reader');
 
@@ -76,7 +80,7 @@ class ImportController extends ContainerAware
                     'alias' => $alias,
                     'headers' => $headers,
                     'headersJson' => json_encode($headers, JSON_FORCE_OBJECT),
-                    'rows' => $rows
+                    'rows' => $rows,
                 ));
             }
         } else {
@@ -90,7 +94,7 @@ class ImportController extends ContainerAware
      * @param Request $request The request
      * @param string  $alias   The objects alias
      *
-     * @return view
+     * @return Response
      */
     public function processAction(Request $request, $alias)
     {
@@ -99,25 +103,27 @@ class ImportController extends ContainerAware
         $form = $this->container->get('form.factory')->create(new ImportFormType(), null, array('field_choices' => $fieldChoices));
 
         if ('POST' == $request->getMethod()) {
-            $form->bind($request);
-
+            if (method_exists($form, 'handleRequest')) {
+                $form->handleRequest($request);
+            } else {
+                $form->bind($request);
+            }
             if ($form->isValid()) {
                 $importer = $this->container->get('avro_csv.importer');
 
                 $importer->init(
                     sprintf(
-                        '%s%s', 
+                        '%s%s',
                         $this->container->getParameter('avro_csv.tmp_upload_dir'),
                         $form['filename']->getData()
                     ),
-                    $this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)), 
+                    $this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)),
                     $form['delimiter']->getData()
                 );
 
                 $importer->import($form['fields']->getData());
 
                 $this->container->get('session')->getFlashBag()->set('success', $importer->getImportCount().' items imported.');
-
             } else {
                 $this->container->get('session')->getFlashBag()->set('error', 'Import failed. Please try again.');
             }
