@@ -7,37 +7,63 @@
 
 namespace Avro\CsvBundle\Doctrine;
 
-
 use Avro\CaseBundle\Util\CaseConverter;
-use Avro\CsvBundle\Annotation\Exclude;
 use Avro\CsvBundle\Event\RowAddedEvent;
 use Avro\CsvBundle\Util\Reader;
-
 use Doctrine\Common\Persistence\ObjectManager;
-
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Import csv to doctrine entity/document
+ * Import csv to doctrine entity/document.
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
 class Importer
 {
+    /**
+     * @var string[]
+     */
+    protected $headers;
+    /**
+     * @var string[]
+     */
     protected $fields;
+    /**
+     * @var ClassMetadataInfo
+     */
     protected $metadata;
+    /**
+     * @var Reader
+     */
     protected $reader;
+    /**
+     * @var int
+     */
     protected $batchSize;
+    /**
+     * @var int
+     */
     protected $importCount = 0;
+    /**
+     * @var CaseConverter
+     */
     protected $caseConverter;
+    /**
+     * @var ObjectManager
+     */
     protected $objectManager;
+    /**
+     * @var string
+     */
+    protected $class;
 
     /**
-     * @param CsvReader     $reader        The csv reader
-     * @param Dispatcher    $dispatcher    The event dispatcher
-     * @param CaseConverter $caseConverter The case Converter
-     * @param ObjectManager $objectManager The Doctrine Object Manager
-     * @param int           $batchSize     The batch size before flushing & clearing the om
+     * @param Reader                   $reader        The csv reader
+     * @param EventDispatcherInterface $dispatcher    The event dispatcher
+     * @param CaseConverter            $caseConverter The case Converter
+     * @param ObjectManager            $objectManager The Doctrine Object Manager
+     * @param int                      $batchSize     The batch size before flushing & clearing the om
      */
     public function __construct(Reader $reader, EventDispatcherInterface $dispatcher, CaseConverter $caseConverter, ObjectManager $objectManager, $batchSize)
     {
@@ -49,14 +75,14 @@ class Importer
     }
 
     /**
-     * Import a file
+     * Import a file.
      *
-     * @param File   $file         The csv file
+     * @param string $file         The csv file
      * @param string $class        The class name of the entity
      * @param string $delimiter    The csv's delimiter
      * @param string $headerFormat The header case format
      *
-     * @return boolean true if successful
+     * @return bool true if successful
      */
     public function init($file, $class, $delimiter = ',', $headerFormat = 'title')
     {
@@ -67,7 +93,7 @@ class Importer
     }
 
     /**
-     * Get the csv's header row
+     * Get the csv's header row.
      *
      * @return array
      */
@@ -77,7 +103,7 @@ class Importer
     }
 
     /**
-     * Get the csv's next row
+     * Get the csv's next row.
      *
      * @return array
      */
@@ -87,7 +113,7 @@ class Importer
     }
 
     /**
-     * Import the csv and persist to database
+     * Import the csv and persist to database.
      *
      * @param array $fields The fields to persist
      *
@@ -103,7 +129,7 @@ class Importer
             } else {
                 $this->addRow($row, $fields, false);
             }
-            $this->importCount++;
+            ++$this->importCount;
         }
 
         // one last flush to make sure no persisted objects get left behind
@@ -113,11 +139,11 @@ class Importer
     }
 
     /**
-     * Add Csv row to db
+     * Add Csv row to db.
      *
-     * @param array   $row      An array of data
-     * @param array   $fields   An array of the fields to import
-     * @param boolean $andFlush Flush the ObjectManager
+     * @param array $row      An array of data
+     * @param array $fields   An array of the fields to import
+     * @param bool  $andFlush Flush the ObjectManager
      */
     private function addRow($row, $fields, $andFlush = true)
     {
@@ -136,8 +162,8 @@ class Importer
         foreach ($fields as $k => $v) {
             if ($this->metadata->hasField(lcfirst($v))) {
                 $entity->{'set'.$fields[$k]}($row[$k]);
-            } else if ($this->metadata->hasAssociation(lcfirst($v))) {
-                $association = $this->metadata->associationMappings[lcfirst($v)];
+            } elseif ($this->metadata->hasAssociation(lcfirst($v))) {
+                $association = $this->metadata->getAssociationMapping(lcfirst($v));
                 switch ($association['type']) {
                     case '1': // oneToOne
                         //Todo:
@@ -161,7 +187,7 @@ class Importer
                                         $entity->{'set'.ucfirst($association['fieldName'])}($relation);
                                     }
                                 }
-                            } catch(\Exception $e) {
+                            } catch (\Exception $e) {
                                 // legacyId does not exist
                                 // fail silently
                             }
@@ -188,7 +214,7 @@ class Importer
     }
 
     /**
-     * Get import count
+     * Get import count.
      *
      * @return int
      */

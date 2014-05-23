@@ -7,31 +7,32 @@
 
 namespace Avro\CsvBundle\Export;
 
-use Doctrine\Orm\Query;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\QueryBuilder;
 
 /**
- * Import csv to doctrine entity/document
+ * Import csv to doctrine entity/document.
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
 abstract class Exporter
 {
+    /**
+     * @var QueryBuilder
+     */
     protected $queryBuilder;
 
     /**
-     * Export all of an objects data to csv format
+     * Export all of an objects data to csv format.
      *
-     * @return $content
+     * @return string
      */
     public function getContent()
     {
-        $iteratableResults = $this->queryBuilder->getQuery()->iterate(null, 2);
+        $iterableResults = $this->queryBuilder->getQuery()->iterate(null, 2);
 
         $content = null;
-        foreach ($iteratableResults as $row) {
+        foreach ($iterableResults as $row) {
             $row = reset($row);
-
             if ($content == null) {
                 $content = $this->arrayToCsv(array_keys($row));
             }
@@ -42,26 +43,26 @@ abstract class Exporter
     }
 
     /**
-      * Converts an array into a CSV string.
-      *
-      * @param array  $fields    The php array to convert
-      * @param string $delimiter The CSV delimiter
-      * @param string $enclosure The CSV enclosure
-      *
-      * @return string CSV formatted string
-      */
+     * Converts an array into a CSV string.
+     *
+     * @param array  $fields    The php array to convert
+     * @param string $delimiter The CSV delimiter
+     * @param string $enclosure The CSV enclosure
+     *
+     * @return string CSV formatted string
+     */
     public function arrayToCsv(array $fields, $delimiter = ',', $enclosure = '"')
     {
         $output = array();
         foreach ($fields as $field) {
-            $output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $this->stringify($field)) . $enclosure;
+            $output[] = $enclosure.str_replace($enclosure, $enclosure.$enclosure, $this->stringify($field)).$enclosure;
         }
 
-        return implode($delimiter, $output) . "\n";
+        return implode($delimiter, $output)."\n";
     }
 
     /**
-     * Get the queryBuilder
+     * Get the queryBuilder.
      *
      * @return QueryBuilder $queryBuilder
      */
@@ -70,23 +71,23 @@ abstract class Exporter
         return $this->queryBuilder;
     }
 
-	/**
-	 * Convert the subject to a string.
-	 *
-	 * @param mixed $field
-	 *
-	 * @return string
-	 */
-	protected function stringify($field)
-	{
-		if ($field instanceof \Datetime) { // format datetime fields
-			return date_format($field, 'Y-m-d');
-		} elseif (is_object($field) && method_exists($field, '__toString')) {
-			return (string)$field;
-		} elseif (!is_scalar($field)) { // fallback to JSON data representation
-			return json_encode($field);
-		}
+    /**
+     * Convert the subject to a string.
+     *
+     * @param mixed $field
+     *
+     * @return string
+     */
+    protected function stringify($field)
+    {
+        if ($field instanceof \Datetime) { // format datetime fields
+            return date_format($field, 'Y-m-d');
+        } elseif (is_object($field) && method_exists($field, '__toString')) {
+            return (string) $field;
+        } elseif (!is_scalar($field)) { // fallback to JSON data representation
+            return json_encode($field);
+        }
 
-		return $field;
-	}
+        return $field;
+    }
 }

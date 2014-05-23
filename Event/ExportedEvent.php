@@ -7,45 +7,32 @@
 
 namespace Avro\CsvBundle\Event;
 
-use Avro\CsvBundle\Export\ExporterInterface;
-
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Export initialized event
+ * Export initialized event.
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-class ExportInitializedEvent extends Event
+class ExportedEvent extends Event
 {
-    protected $exporter;
+    protected $content;
 
     /**
-     * @param Exporter $exporter The Avro Exporter service
+     * @param string $content Csv data
      */
-    public function __construct(ExporterInterface $exporter)
+    public function __construct($content)
     {
-        $this->exporter = $exporter;
+        $this->content = $content;
     }
 
     /**
-     * Get the avro exporter
+     * Get the csv data.
      *
-     * @return AvroExporter
+     * @return string
      */
-    public function getExporter()
+    public function getContent()
     {
-        return $this->exporter;
-    }
-
-    /**
-     * Get the queryBuilder
-     *
-     * @return QueryBuilder
-     */
-    public function getQueryBuilder()
-    {
-        return $this->exporter->getQueryBuilder();
+        return $this->content;
     }
 }
-

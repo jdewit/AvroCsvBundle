@@ -1,15 +1,19 @@
 <?php
 
+/**
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Avro\CsvBundle\Util;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-
-use Avro\CsvBundle\Annotation\ImportExclude;
 use Avro\CaseBundle\Util\CaseConverter;
+use Avro\CsvBundle\Annotation\ImportExclude;
+use Doctrine\Common\Annotations\AnnotationReader;
 
 /**
  * Retrieves the fields of a Doctrine entity/document that
- * are allowed to be imported
+ * are allowed to be imported.
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
@@ -29,11 +33,11 @@ class FieldRetriever
     }
 
     /**
-     * Get the entity/documents field names
+     * Get the entity/documents field names.
      *
-     * @param string  $class     The class name
-     * @param string  $format    The desired field case format
-     * @param boolean $copyToKey Copy the field values to their respective key
+     * @param string $class     The class name
+     * @param string $format    The desired field case format
+     * @param bool   $copyToKey Copy the field values to their respective key
      *
      * @return array $fields
      */

@@ -10,7 +10,7 @@ namespace Avro\CsvBundle\Event;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Row added event
+ * Row added event.
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
@@ -21,9 +21,9 @@ class RowAddedEvent extends Event
     protected $fields;
 
     /**
-     * @param DoctrineObject $object The new object being persisted
-     * @param array          $row    The row being imported
-     * @param array          $fields The mapped fields
+     * @param \stdClass $object The new object being persisted
+     * @param array     $row    The row being imported
+     * @param array     $fields The mapped fields
      */
     public function __construct($object, array $row, array $fields)
     {
@@ -33,9 +33,9 @@ class RowAddedEvent extends Event
     }
 
     /**
-     * Get the doctrine object
+     * Get the doctrine object.
      *
-     * @return DoctrienObject
+     * @return \stdClass
      */
     public function getObject()
     {
@@ -43,7 +43,7 @@ class RowAddedEvent extends Event
     }
 
     /**
-     * Get field row
+     * Get field row.
      *
      * @return array
      */
@@ -53,7 +53,7 @@ class RowAddedEvent extends Event
     }
 
     /**
-     * Get mapped fields
+     * Get mapped fields.
      *
      * @return array
      */
@@ -62,4 +62,3 @@ class RowAddedEvent extends Event
         return $this->fields;
     }
 }
-
