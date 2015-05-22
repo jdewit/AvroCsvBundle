@@ -54,11 +54,7 @@ abstract class Exporter
     {
         $output = array();
         foreach ($fields as $field) {
-            if ($field instanceof \Datetime) { // format datetime fields
-                $field = date_format($field, 'Y-m-d');
-            }
-
-            $output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $field) . $enclosure;
+            $output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $this->stringify($field)) . $enclosure;
         }
 
         return implode($delimiter, $output) . "\n";
@@ -73,4 +69,24 @@ abstract class Exporter
     {
         return $this->queryBuilder;
     }
+
+	/**
+	 * Convert the subject to a string.
+	 *
+	 * @param mixed $field
+	 *
+	 * @return string
+	 */
+	protected function stringify($field)
+	{
+		if ($field instanceof \Datetime) { // format datetime fields
+			return date_format($field, 'Y-m-d');
+		} elseif (is_object($field) && method_exists($field, '__toString')) {
+			return (string)$field;
+		} elseif (!is_scalar($field)) { // fallback to JSON data representation
+			return json_encode($field);
+		}
+
+		return $field;
+	}
 }
