@@ -15,6 +15,7 @@ class Reader
     protected $enclosure;
     protected $line;
     protected $headers;
+    protected $lineLength;
 
     /**
      * Open a CSV file
@@ -25,12 +26,13 @@ class Reader
      * @param string  $enclosure  The enclosure
      * @param boolean $hasHeaders Does the CSV have any headers?
      */
-    public function open($file, $delimiter = ',', $mode = 'r+', $enclosure = '"', $hasHeaders = true)
+    public function open($file, $delimiter = ',', $mode = 'r+', $enclosure = '"', $hasHeaders = true, $lineLength = 0)
     {
         $this->handle = fopen($file, $mode);
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
         $this->line = 0;
+        $this->lineLength = $lineLength;
 
         if ($hasHeaders) {
             $this->headers = $this->getRow();
@@ -44,13 +46,15 @@ class Reader
      */
     public function getRow()
     {
-        if (($row = fgetcsv($this->handle, 1000, $this->delimiter, $this->enclosure)) !== false) {
+        while (($row = fgetcsv($this->handle, $this->lineLength, $this->delimiter, $this->enclosure)) !== false) {
             $this->line++;
+            // a blank line returns array of one null. if found, skip it.
+            if ((count($row) == 1) && ($row[0] == NULL))
+              continue;
 
             return $row;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
