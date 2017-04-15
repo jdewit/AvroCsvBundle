@@ -35,7 +35,8 @@ This bundle is listed on packagist.
 Simply add it to your apps composer.json file
 
 ``` js
-    "avro/csv-bundle": "*"
+    "avro/csv-bundle": "*",
+    "avro/case-bundle": "*"
 ```
 
 Enable the bundle in the kernel as well as the dependent AvroCaseBundle:
