@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ImportController implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
+
     /**
      * Upload a csv.
      *
@@ -33,12 +34,12 @@ class ImportController implements ContainerAwareInterface
     {
         $fieldChoices = $this->container->get('avro_csv.field_retriever')->getFields($this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)), 'title', true);
 
-        $form = $this->container->get('form.factory')->create(ImportFormType::class, null, array('field_choices' => $fieldChoices));
+        $form = $this->container->get('form.factory')->create(ImportFormType::class, null, ['field_choices' => $fieldChoices]);
 
-        return $this->container->get('templating')->renderResponse('@AvroCsv/Import/upload.html.twig', array(
+        return $this->container->get('templating')->renderResponse('@AvroCsv/Import/upload.html.twig', [
             'form' => $form->createView(),
             'alias' => $alias,
-        ));
+        ]);
     }
 
     /**
@@ -53,7 +54,7 @@ class ImportController implements ContainerAwareInterface
     {
         $fieldChoices = $this->container->get('avro_csv.field_retriever')->getFields($this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)), 'title', true);
 
-        $form = $this->container->get('form.factory')->create(ImportFormType::class, null, array('field_choices' => $fieldChoices));
+        $form = $this->container->get('form.factory')->create(ImportFormType::class, null, ['field_choices' => $fieldChoices]);
 
         if ('POST' == $request->getMethod()) {
             $form->handleRequest($request);
@@ -73,19 +74,19 @@ class ImportController implements ContainerAwareInterface
                 $headers = $this->container->get('avro_csv.importer')->toFormFieldName($fileHeaders);
 
                 // Recreate form and create proper fields child for each header
-                $form = $this->container->get('form.factory')->create(ImportFormType::class, null, array('field_choices' => $fieldChoices));
+                $form = $this->container->get('form.factory')->create(ImportFormType::class, null, ['field_choices' => $fieldChoices]);
                 $form->get('fields')->setData(array_fill_keys((array) $headers, null));
                 $form->handleRequest($request);
 
                 $rows = $reader->getRows($this->container->getParameter('avro_csv.sample_count'));
 
-                return $this->container->get('templating')->renderResponse('@AvroCsv/Import/mapping.html.twig', array(
+                return $this->container->get('templating')->renderResponse('@AvroCsv/Import/mapping.html.twig', [
                     'form' => $form->createView(),
                     'alias' => $alias,
                     'headers' => array_combine((array) $headers, (array) $fileHeaders),
                     'headersJson' => json_encode($this->container->get('avro_case.converter')->toTitleCase($fileHeaders), JSON_FORCE_OBJECT),
                     'rows' => $rows,
-                ));
+                ]);
             }
         } else {
             return new RedirectResponse($this->container->get('router')->generate($this->container->getParameter(sprintf('avro_csv.objects.%s.redirect_route', $alias))));
@@ -104,7 +105,7 @@ class ImportController implements ContainerAwareInterface
     {
         $fieldChoices = $this->container->get('avro_csv.field_retriever')->getFields($this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)), 'title', true);
 
-        $form = $this->container->get('form.factory')->create(ImportFormType::class, null, array('field_choices' => $fieldChoices));
+        $form = $this->container->get('form.factory')->create(ImportFormType::class, null, ['field_choices' => $fieldChoices]);
 
         if ('POST' == $request->getMethod()) {
             $form->handleRequest($request);
@@ -124,7 +125,7 @@ class ImportController implements ContainerAwareInterface
 
                 $importer->import($form['fields']->getData());
 
-                $this->container->get('session')->getFlashBag()->set('success', $importer->getImportCount().' items imported.');
+                $this->container->get('session')->getFlashBag()->set('success', $importer->getImportCount().' items imported. '.$importer->getImportErrors().' errors.');
             } else {
                 $this->container->get('session')->getFlashBag()->set('error', 'Import failed. Please try again.');
             }

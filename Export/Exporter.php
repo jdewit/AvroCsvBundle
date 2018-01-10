@@ -33,7 +33,7 @@ abstract class Exporter
         $content = null;
         foreach ($iterableResults as $row) {
             $row = reset($row);
-            if ($content == null) {
+            if (null == $content) {
                 $content = $this->arrayToCsv(array_keys($row));
             }
             $content .= $this->arrayToCsv(array_values($row));
@@ -53,7 +53,7 @@ abstract class Exporter
      */
     public function arrayToCsv(array $fields, $delimiter = ',', $enclosure = '"')
     {
-        $output = array();
+        $output = [];
         foreach ($fields as $field) {
             $output[] = $enclosure.str_replace($enclosure, $enclosure.$enclosure, $this->stringify($field)).$enclosure;
         }

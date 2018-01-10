@@ -10,35 +10,35 @@ namespace Avro\CsvBundle\Export;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * Exporter interface
+ * Exporter interface.
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
 interface ExporterInterface
 {
     /**
-     * Initialize the exporter by setting the queryBuilder
+     * Initialize the exporter by setting the queryBuilder.
      *
      * @param string $class The fully qualified class name
      */
     public function init($class);
 
     /**
-     * Export all of an objects data to csv format
+     * Export all of an objects data to csv format.
      *
-     * @return $content
+     * @return string
      */
     public function getContent();
 
     /**
-      * Converts an array into a CSV string.
-      *
-      * @param array  $fields    The php array to convert
-      * @param string $delimiter The CSV delimiter
-      * @param string $enclosure The CSV enclosure
-      *
-      * @return string CSV formatted string
-      */
+     * Converts an array into a CSV string.
+     *
+     * @param array  $fields    The php array to convert
+     * @param string $delimiter The CSV delimiter
+     * @param string $enclosure The CSV enclosure
+     *
+     * @return string CSV formatted string
+     */
     public function arrayToCsv(array $fields, $delimiter = ',', $enclosure = '"');
 
     /**
@@ -46,5 +46,3 @@ interface ExporterInterface
      */
     public function getQueryBuilder();
 }
-
-
