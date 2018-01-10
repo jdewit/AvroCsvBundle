@@ -46,7 +46,7 @@ class FieldRetriever
         $reflectionClass = new \ReflectionClass($class);
         $properties = $reflectionClass->getProperties();
 
-        $fields = array();
+        $fields = [];
         foreach ($properties as $property) {
             $addField = true;
             foreach ($this->annotationReader->getPropertyAnnotations($property) as $annotation) {

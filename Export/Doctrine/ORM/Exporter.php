@@ -12,7 +12,7 @@ use Avro\CsvBundle\Export\ExporterInterface;
 use Doctrine\ORM\EntityManager;
 
 /**
- * Import csv to doctrine entity/document
+ * Import csv to doctrine entity/document.
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
@@ -29,7 +29,7 @@ class Exporter extends BaseExporter implements ExporterInterface
     }
 
     /**
-     * Initialize the exporter by setting the queryBuilder
+     * Initialize the exporter by setting the queryBuilder.
      *
      * @param string $class The fully qualified class name
      */

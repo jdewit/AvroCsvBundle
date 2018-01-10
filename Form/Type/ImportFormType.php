@@ -31,44 +31,44 @@ class ImportFormType extends AbstractType
             ->add(
                 'delimiter',
                 ChoiceType::class,
-                array(
-                    'choices' => array(
+                [
+                    'choices' => [
                         'comma' => ',',
                         'semicolon' => ';',
                         'pipe' => '|',
                         'colon' => ':',
-                    ),
+                    ],
                     'choices_as_values' => true,
                     'label' => 'Delimiter',
-                )
+                ]
             )
             ->add(
                 'file',
                 FileType::class,
-                array(
+                [
                     'label' => 'File',
                     'required' => true,
-                )
+                ]
             )
             ->add(
                 'filename',
                 HiddenType::class,
-                array(
+                [
                     'required' => false,
-                )
+                ]
             )
             ->add(
                 'fields',
                 CollectionType::class,
-                array(
+                [
                     'allow_add' => true,
                     'entry_type' => ChoiceType::class,
-                    'entry_options' => array(
+                    'entry_options' => [
                         'choices' => $options['field_choices'],
-                    ),
+                    ],
                     'label' => 'Fields',
                     'required' => false,
-                )
+                ]
             );
 
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
@@ -90,9 +90,9 @@ class ImportFormType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'field_choices' => array(),
-        ));
+        $resolver->setDefaults([
+            'field_choices' => [],
+        ]);
     }
 
     /**

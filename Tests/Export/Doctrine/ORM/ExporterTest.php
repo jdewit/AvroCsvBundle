@@ -22,11 +22,11 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $query = $this->getMock('Doctrine\ORM\AbstractQuery', array('iterate', 'HYDRATE_ARRAY', 'getSQL', '_doExecute'), array(), '', false);
+        $query = $this->getMock('Doctrine\ORM\AbstractQuery', ['iterate', 'HYDRATE_ARRAY', 'getSQL', '_doExecute'], [], '', false);
         $query->expects($this->any())
             ->method('iterate')
-            ->will($this->returnValue(array(0 => array(0 => array('row 1' => 'val\'1', 'row 2' => 'val,2', 'row 3' => 'val"3')))));
-        $queryBuilder = $this->getMock('Doctrine\ORM\QueryBuilder', array('select', 'from', 'getQuery'), array(), '', false);
+            ->will($this->returnValue([0 => [0 => ['row 1' => 'val\'1', 'row 2' => 'val,2', 'row 3' => 'val"3']]]));
+        $queryBuilder = $this->getMock('Doctrine\ORM\QueryBuilder', ['select', 'from', 'getQuery'], [], '', false);
         $queryBuilder->expects($this->any())
             ->method('select')
             ->will($this->returnValue($queryBuilder));
@@ -39,7 +39,7 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
         $queryBuilder->expects($this->any())
             ->method('getQuery')
             ->will($this->returnValue($query));
-        $entityManager = $this->getMock('Doctrine\ORM\EntityManager', array('createQueryBuilder'), array(), '', false);
+        $entityManager = $this->getMock('Doctrine\ORM\EntityManager', ['createQueryBuilder'], [], '', false);
         $entityManager->expects($this->any())
             ->method('createQueryBuilder')
             ->will($this->returnValue($queryBuilder));
@@ -63,7 +63,7 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             '"val\'1","val,2","val""3"'."\n",
-            $this->exporter->arrayToCsv(array('val\'1', 'val,2', 'val"3'))
+            $this->exporter->arrayToCsv(['val\'1', 'val,2', 'val"3'])
         );
     }
 

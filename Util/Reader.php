@@ -48,7 +48,7 @@ class Reader
      */
     public function getRow()
     {
-        if (($row = fgetcsv($this->handle, 1000, $this->delimiter, $this->enclosure)) !== false) {
+        if (false !== ($row = fgetcsv($this->handle, 1000, $this->delimiter, $this->enclosure))) {
             ++$this->line;
 
             return $row;
@@ -66,7 +66,7 @@ class Reader
      */
     public function getRows($count)
     {
-        $rows = array();
+        $rows = [];
         for ($i = 0; $i < $count; ++$i) {
             $row = $this->getRow();
             if ($row) {
@@ -84,7 +84,7 @@ class Reader
      */
     public function getAll()
     {
-        $data = array();
+        $data = [];
         while ($row = $this->getRow()) {
             $data[] = $row;
         }

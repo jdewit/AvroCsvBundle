@@ -30,11 +30,11 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $fields = array('id', 'field1', 'field2');
+        $fields = ['id', 'field1', 'field2'];
         $this->fields = $fields;
         $caseConverter = new CaseConverter();
         $reader = new Reader();
-        $metadata = $this->getMockForAbstractClass('Doctrine\Common\Persistence\Mapping\ClassMetadata', array('hasField'));
+        $metadata = $this->getMockForAbstractClass('Doctrine\Common\Persistence\Mapping\ClassMetadata', ['hasField']);
         $metadata->expects($this->any())
             ->method('hasField')
             ->will($this->returnCallback(function ($value) use ($fields) {

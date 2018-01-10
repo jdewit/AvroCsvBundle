@@ -10,44 +10,23 @@ namespace Avro\CsvBundle\Event;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Row added event.
+ * Row error event.
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-class RowAddedEvent extends Event
+class RowErrorEvent extends Event
 {
-    protected $object;
     protected $row;
     protected $fields;
 
     /**
-     * @param \stdClass|null $object The new object being persisted
-     * @param array          $row    The row being imported
-     * @param array          $fields The mapped fields
+     * @param array $row    The row being imported
+     * @param array $fields The mapped fields
      */
-    public function __construct($object, array $row, array $fields)
+    public function __construct(array $row, array $fields)
     {
-        $this->object = $object;
         $this->row = $row;
         $this->fields = $fields;
-    }
-
-    /**
-     * @param \stdClass|null $object
-     */
-    public function setObject($object)
-    {
-        $this->object = $object;
-    }
-
-    /**
-     * Get the doctrine object.
-     *
-     * @return \stdClass|null
-     */
-    public function getObject()
-    {
-        return $this->object;
     }
 
     /**
