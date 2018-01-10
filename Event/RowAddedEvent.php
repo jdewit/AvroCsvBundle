@@ -21,9 +21,9 @@ class RowAddedEvent extends Event
     protected $fields;
 
     /**
-     * @param \stdClass $object The new object being persisted
-     * @param array     $row    The row being imported
-     * @param array     $fields The mapped fields
+     * @param \stdClass|null $object The new object being persisted
+     * @param array          $row The row being imported
+     * @param array          $fields The mapped fields
      */
     public function __construct($object, array $row, array $fields)
     {
@@ -33,9 +33,17 @@ class RowAddedEvent extends Event
     }
 
     /**
+     * @param \stdClass|null $object
+     */
+    public function setObject($object)
+    {
+        $this->object = $object;
+    }
+
+    /**
      * Get the doctrine object.
      *
-     * @return \stdClass
+     * @return \stdClass|null
      */
     public function getObject()
     {
