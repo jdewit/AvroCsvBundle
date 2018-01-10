@@ -12,6 +12,7 @@ use Avro\CsvBundle\Event\RowAddedEvent;
 use Avro\CsvBundle\Util\Reader;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -37,6 +38,10 @@ class Importer
      * @var Reader
      */
     protected $reader;
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $dispatcher;
     /**
      * @var int
      */
@@ -81,8 +86,6 @@ class Importer
      * @param string $class        The class name of the entity
      * @param string $delimiter    The csv's delimiter
      * @param string $headerFormat The header case format
-     *
-     * @return bool true if successful
      */
     public function init($file, $class, $delimiter = ',', $headerFormat = 'title')
     {
@@ -102,6 +105,8 @@ class Importer
      * @param array $fields The fields to persist
      *
      * @return true if successful
+     *
+     * @throws MappingException
      */
     public function import($fields)
     {
@@ -161,6 +166,8 @@ class Importer
      * @param array $row      An array of data
      * @param array $fields   An array of the fields to import
      * @param bool  $andFlush Flush the ObjectManager
+     *
+     * @throws MappingException
      */
     private function addRow($row, $fields, $andFlush = true)
     {
@@ -220,9 +227,10 @@ class Importer
             }
         }
 
-        $this->dispatcher->dispatch('avro_csv.row_added', new RowAddedEvent($entity, $row, $fields));
-
-        // Allow the RowAddedEvent Listener to nullify invalid objects
+        // Allow RowAddedEvent listeners to nullify objects (i.e. when invalid)
+        $event = new RowAddedEvent($entity, $row, $fields);
+        $this->dispatcher->dispatch('avro_csv.row_added', $event);
+        $entity = $event->getObject();
         if (null !== $entity) {
             $this->objectManager->persist($entity);
         }
