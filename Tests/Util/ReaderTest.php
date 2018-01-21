@@ -1,11 +1,19 @@
 <?php
 
+/**
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Avro\CsvBundle\Tests\Util;
 
 use Avro\CsvBundle\Util\Reader;
 
 class ReaderTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Reader
+     */
     protected $reader;
 
     public function setUp()

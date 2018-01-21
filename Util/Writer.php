@@ -1,22 +1,38 @@
 <?php
 
+/**
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Avro\CsvBundle\Util;
 
-/*
- * Creates a CSV file from an array
+/**
+ * Creates a CSV file from an array.
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
 class Writer
 {
+    /**
+     * @var resource
+     */
     protected $handle;
+    /**
+     * @var string
+     */
     protected $delimiter;
+    /**
+     * @var string
+     */
     protected $enclosure;
+    /**
+     * @var int
+     */
     protected $line;
-    protected $headers;
 
     /**
-     * Open CSV file
+     * Open CSV file.
      *
      * @param $file
      * @param $mode
@@ -33,16 +49,16 @@ class Writer
     }
 
     /**
-     * Convert array to CSV row
+     * Convert array to CSV row.
      *
-     * @param array   $row      The data to convert
-     * @param boolean $addBreak Adds linebreak if true
+     * @param array $row      The data to convert
+     * @param bool  $addBreak Adds linebreak if true
      *
      * @return array
      */
     public function convertRow(array $row, $addBreak = true)
     {
-        $formatValue = function($value) {
+        $formatValue = function ($value) {
             if ($value instanceof \Datetime) {
                 $value = date_format($value, 'Y-m-d');
             }
@@ -53,7 +69,7 @@ class Writer
         $row = implode(array_map($formatValue, $row), ',');
 
         if ($addBreak) {
-          $row = <<<EOT
+            $row = <<<EOT
 
 $row
 
@@ -64,7 +80,7 @@ EOT;
     }
 
     /**
-     * Write a row in the CSV file
+     * Write a row in the CSV file.
      *
      * @param string|array $row The data to add to the CSV
      *
@@ -98,5 +114,4 @@ EOT;
             fclose($this->handle);
         }
     }
-
 }

@@ -1,16 +1,20 @@
 <?php
 
+/**
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Avro\CsvBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
-* Contains the configuration information for the bundle
-*
-* @author Joris de Wit <joris.w.dewit@gmail.com>
-*/
+ * Contains the configuration information for the bundle.
+ *
+ * @author Joris de Wit <joris.w.dewit@gmail.com>
+ */
 class Configuration implements ConfigurationInterface
 {
     /**
@@ -43,5 +47,4 @@ class Configuration implements ConfigurationInterface
 
         return $treeBuilder;
     }
-
 }

@@ -8,11 +8,11 @@
 namespace Avro\CsvBundle\Event;
 
 use Avro\CsvBundle\Export\ExporterInterface;
-
+use Doctrine\DBAL\Query\QueryBuilder;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Export initialized event
+ * Export initialized event.
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
@@ -21,7 +21,7 @@ class ExportEvent extends Event
     protected $exporter;
 
     /**
-     * @param Exporter $exporter The Avro Exporter service
+     * @param ExporterInterface $exporter The Avro Exporter service
      */
     public function __construct(ExporterInterface $exporter)
     {
@@ -29,9 +29,9 @@ class ExportEvent extends Event
     }
 
     /**
-     * Get the avro exporter
+     * Get the avro exporter.
      *
-     * @return AvroExporter
+     * @return ExporterInterface
      */
     public function getExporter()
     {
@@ -39,7 +39,7 @@ class ExportEvent extends Event
     }
 
     /**
-     * Get the queryBuilder
+     * Get the queryBuilder.
      *
      * @return QueryBuilder
      */
@@ -48,4 +48,3 @@ class ExportEvent extends Event
         return $this->exporter->getQueryBuilder();
     }
 }
-
