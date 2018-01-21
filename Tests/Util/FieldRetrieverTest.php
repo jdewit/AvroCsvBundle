@@ -35,9 +35,10 @@ class FieldRetrieverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             $this->fieldRetriever->getFields($this->class),
             array(
-                '0' => 'Id',
-                '1' => 'Field1',
-                '2' => 'Field2',
+                '0' => '',
+                '1' => 'Id',
+                '2' => 'Field1',
+                '3' => 'Field2',
             )
         );
     }
@@ -47,9 +48,10 @@ class FieldRetrieverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             $this->fieldRetriever->getFields($this->class, 'camel'),
             array(
-                '0' => 'id',
-                '1' => 'field1',
-                '2' => 'field2',
+                '0' => '',
+                '1' => 'id',
+                '2' => 'field1',
+                '3' => 'field2',
             )
         );
     }
@@ -59,6 +61,7 @@ class FieldRetrieverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             $this->fieldRetriever->getFields($this->class, 'camel', true),
             array(
+                '' => '',
                 'id' => 'id',
                 'field1' => 'field1',
                 'field2' => 'field2',

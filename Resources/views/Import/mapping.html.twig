@@ -3,7 +3,7 @@
     <div class="page-header">
         <h1>Map Columns</h1>
     </div>
-    <form class="form-horizontal" action="{{ path('avro_csv_import_process', {'alias': alias}) }}" method="post" {{ form_enctype(form) }}>
+    <form class="form-horizontal" action="{{ path('avro_csv_import_process', {'alias': alias}) }}" method="post">
         <div id="error-container"></div>
         <div class="form-content">
             <table class="table-styled table-bordered table-striped table-rounded">
@@ -17,12 +17,11 @@
                     </tr>
                 </thead>
                 <tbody class="collection">
-                    {% set fieldChoice = form_widget(form.fields.vars['prototype']) %}
-                    {% for header in headers %}
+                    {% for header, title in headers %}
                         {% set index = loop.index0 %}
                         <tr class="collection-item">
-                            <td>{{ header }}</td>
-                            <td>{{ fieldChoice | raw }}</td>
+                            <td>{{ title }}</td>
+                            <td>{% if form.fields[header] is defined %}{{ form_widget(form.fields[header]) }}{% endif %}</td>
                             {% for row in rows %}
                                 <td>{{ row[index] }}</td>
                             {% endfor %}

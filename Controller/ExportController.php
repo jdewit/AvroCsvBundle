@@ -9,7 +9,8 @@ namespace Avro\CsvBundle\Controller;
 
 use Avro\CsvBundle\Event\ExportedEvent;
 use Avro\CsvBundle\Event\ExportEvent;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -17,8 +18,9 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-class ExportController extends ContainerAware
+class ExportController implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
     /**
      * Export a db table.
      *

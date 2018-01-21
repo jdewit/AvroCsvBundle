@@ -3,7 +3,7 @@
     <div class="page-header">
         <h1>Import {{ alias | title }}s</h1>
     </div>
-    <form class="form-horizontal" action="{{ path('avro_csv_import_mapping', {'alias': alias}) }}" method="post" {{ form_enctype(form) }}>
+    <form class="form-horizontal" action="{{ path('avro_csv_import_mapping', {'alias': alias}) }}" method="post" enctype="multipart/form-data">
         <div id="error-container"></div>
         <div class="form-content">
             {{ form_row(form.delimiter) }}
