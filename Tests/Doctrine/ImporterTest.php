@@ -12,32 +12,27 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
 {
     protected $fieldRetriever;
     protected $class;
+    protected $importer;
 
     /**
      * Setup test class
      */
     public function setUp()
     {
-        $annotationReader = new AnnotationReader();
         $caseConverter = new CaseConverter();
         $reader = new Reader();
+        $metadata = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
+        $metadata->expects($this->any())
+            ->method('hasField')
+            ->will($this->returnValue(true));
         $metadataFactory = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadataFactory');
         $metadataFactory->expects($this->any())
             ->method('getMetadataFor')
-            ->will($this->returnValue(array(
-                'fieldMappings' => array(
-                    '0' => 'id'
-                )
-            )));
-
+			->will($this->returnValue($metadata));
         $objectManager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
         $objectManager->expects($this->any())
             ->method('getMetadataFactory')
             ->will($this->returnValue($metadataFactory));
-        $objectManager->expects($this->any())
-            ->method('hasField')
-            ->will($this->returnValue(true));
-
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
         $class = 'Avro\CsvBundle\Tests\TestEntity';

@@ -26,7 +26,6 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
         $query->expects($this->any())
             ->method('iterate')
             ->will($this->returnValue(array(0 => array(0 => array('row 1' => 'val\'1', 'row 2' => 'val,2', 'row 3' => 'val"3')))));
-
         $queryBuilder = $this->getMock('Doctrine\ORM\QueryBuilder', array('select', 'from', 'getQuery'), array(), '', false);
         $queryBuilder->expects($this->any())
             ->method('select')
@@ -40,8 +39,6 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
         $queryBuilder->expects($this->any())
             ->method('getQuery')
             ->will($this->returnValue($query));
-//array(0 => array('field1', 'field2')
-
         $entityManager = $this->getMock('Doctrine\ORM\EntityManager', array('createQueryBuilder'), array(), '', false);
         $entityManager->expects($this->any())
             ->method('createQueryBuilder')

@@ -40,7 +40,7 @@ class Importer
     /**
      * @var int
      */
-    protected $batchSize;
+    protected $batchSize = 20;
     /**
      * @var int
      */
@@ -88,8 +88,12 @@ class Importer
     {
         $this->reader->open($file, $delimiter);
         $this->class = $class;
-        $this->metadata = $this->objectManager->getMetadataFactory()->getMetadataFor($class);
-        $this->headers = $this->caseConverter->convert($this->reader->getHeaders(), $headerFormat);
+        $this->metadata = $this->objectManager->getClassMetadata($class);
+        if ('form' === $headerFormat) {
+            $this->headers = $this->toFormFieldName($this->reader->getHeaders());
+        } else {
+            $this->headers = $this->caseConverter->convert($this->reader->getHeaders(), $headerFormat);
+        }
     }
 
     /**
@@ -101,7 +105,6 @@ class Importer
     {
         return $this->headers;
     }
-
     /**
      * Get the csv's next row.
      *
@@ -124,7 +127,7 @@ class Importer
         $fields = array_unique($this->caseConverter->toPascalCase($fields));
 
         while ($row = $this->reader->getRow()) {
-            if (($this->importCount % $this->batchSize) == 0) {
+            if (0 !== $this->importCount && ($this->importCount % $this->batchSize) === 0) {
                 $this->addRow($row, $fields, true);
             } else {
                 $this->addRow($row, $fields, false);
@@ -136,6 +139,39 @@ class Importer
         $this->objectManager->flush();
 
         return true;
+    }
+
+    /**
+     * Converts a string to a format suitable as form name.
+     *
+     * @param string|array $input
+     *
+     * @return string|array
+     */
+    public function toFormFieldName($input)
+    {
+        if (is_array($input)) {
+            $result = array();
+            foreach ($input as $val) {
+                $result[] = $this->convertToFormFieldName($val);
+            }
+        } else {
+            $result = $this->convertToFormFieldName($input);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Generate a hash string suitable as form field name.
+     *
+     * @param string $input
+     *
+     * @return string
+     */
+    private function convertToFormFieldName($input)
+    {
+        return sha1($input);
     }
 
     /**
@@ -205,7 +241,10 @@ class Importer
 
         $this->dispatcher->dispatch('avro_csv.row_added', new RowAddedEvent($entity, $row, $fields));
 
-        $this->objectManager->persist($entity);
+        // Allow the RowAddedEvent Listener to nullify invalid objects
+        if (null !== $entity) {
+            $this->objectManager->persist($entity);
+        }
 
         if ($andFlush) {
             $this->objectManager->flush();

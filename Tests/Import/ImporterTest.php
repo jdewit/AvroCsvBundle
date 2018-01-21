@@ -31,24 +31,19 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $fields = array('id', 'field1', 'field2');
-
         $this->fields = $fields;
-
         $caseConverter = new CaseConverter();
         $reader = new Reader();
-
         $metadata = $this->getMockForAbstractClass('Doctrine\Common\Persistence\Mapping\ClassMetadata', array('hasField'));
         $metadata->expects($this->any())
             ->method('hasField')
             ->will($this->returnCallback(function ($value) use ($fields) {
                 return in_array($value, $fields);
             }));
-
         $objectManager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
         $objectManager->expects($this->any())
             ->method('getClassMetadata')
             ->will($this->returnValue($metadata));
-
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $dispatcher->expects($this->any())
             ->method('dispatch')

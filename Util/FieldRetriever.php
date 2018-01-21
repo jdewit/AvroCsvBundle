@@ -59,6 +59,8 @@ class FieldRetriever
                 $fields[] = $this->caseConverter->convert($property->getName(), $format);
             }
         }
+        // Add empty field so fields can be skipped
+        array_unshift($fields, '');
 
         if ($copyToKey) {
             $fields = array_combine($fields, $fields);

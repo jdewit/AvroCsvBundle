@@ -63,7 +63,7 @@ class Importer
      * @param EventDispatcherInterface $dispatcher    The event dispatcher
      * @param CaseConverter            $caseConverter The case Converter
      * @param ObjectManager            $objectManager The Doctrine Object Manager
-     * @param int                      $batchSize     The batch size before flushing & clearing the om
+     * @param int                      $batchSize     The batch size before flushing the om
      */
     public function __construct(Reader $reader, EventDispatcherInterface $dispatcher, CaseConverter $caseConverter, ObjectManager $objectManager, $batchSize)
     {
@@ -89,7 +89,11 @@ class Importer
         $this->reader->open($file, $delimiter);
         $this->class = $class;
         $this->metadata = $this->objectManager->getClassMetadata($class);
-        $this->headers = $this->caseConverter->convert($this->reader->getHeaders(), $headerFormat);
+        if ('form' === $headerFormat) {
+            $this->headers = $this->toFormFieldName($this->reader->getHeaders());
+        } else {
+            $this->headers = $this->caseConverter->convert($this->reader->getHeaders(), $headerFormat);
+        }
     }
 
     /**
@@ -104,7 +108,7 @@ class Importer
         $fields = array_unique($this->caseConverter->toPascalCase($fields));
 
         while ($row = $this->reader->getRow()) {
-            if (($this->importCount % $this->batchSize) == 0) {
+            if (0 !== $this->importCount && ($this->importCount % $this->batchSize) === 0) {
                 $this->addRow($row, $fields, true);
             } else {
                 $this->addRow($row, $fields, false);
@@ -116,6 +120,39 @@ class Importer
         $this->objectManager->flush();
 
         return true;
+    }
+
+    /**
+     * Converts a string to a format suitable as form name.
+     *
+     * @param string|array $input
+     *
+     * @return string|array
+     */
+    public function toFormFieldName($input)
+    {
+        if (is_array($input)) {
+            $result = array();
+            foreach ($input as $val) {
+                $result[] = $this->convertToFormFieldName($val);
+            }
+        } else {
+            $result = $this->convertToFormFieldName($input);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Generate a hash string suitable as form field name.
+     *
+     * @param string $input
+     *
+     * @return string
+     */
+    private function convertToFormFieldName($input)
+    {
+        return sha1($input);
     }
 
     /**
@@ -143,7 +180,7 @@ class Importer
             if ($this->metadata->hasField(lcfirst($v))) {
                 $entity->{'set'.$fields[$k]}($row[$k]);
             } elseif ($this->metadata->hasAssociation(lcfirst($v))) {
-                $association = $this->metadata->associationMappings[lcfirst($v)];
+                $association = $this->metadata->getAssociationMapping(lcfirst($v));
                 switch ($association['type']) {
                     case '1': // oneToOne
                         //Todo:
@@ -185,11 +222,13 @@ class Importer
 
         $this->dispatcher->dispatch('avro_csv.row_added', new RowAddedEvent($entity, $row, $fields));
 
-        $this->objectManager->persist($entity);
+        // Allow the RowAddedEvent Listener to nullify invalid objects
+        if (null !== $entity) {
+            $this->objectManager->persist($entity);
+        }
 
         if ($andFlush) {
             $this->objectManager->flush();
-            $this->objectManager->clear($this->class);
         }
     }
 
