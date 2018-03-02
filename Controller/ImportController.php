@@ -35,7 +35,7 @@ class ImportController implements ContainerAwareInterface
 
         $form = $this->container->get('form.factory')->create(ImportFormType::class, null, array('field_choices' => $fieldChoices));
 
-        return $this->container->get('templating')->renderResponse('@AvroCsvBundle/Import/upload.html.twig', array(
+        return $this->container->get('templating')->renderResponse('@AvroCsv/Import/upload.html.twig', array(
             'form' => $form->createView(),
             'alias' => $alias,
         ));
@@ -79,7 +79,7 @@ class ImportController implements ContainerAwareInterface
 
                 $rows = $reader->getRows($this->container->getParameter('avro_csv.sample_count'));
 
-                return $this->container->get('templating')->renderResponse('@AvroCsvBundle/Import/mapping.html.twig', array(
+                return $this->container->get('templating')->renderResponse('@AvroCsv/Import/mapping.html.twig', array(
                     'form' => $form->createView(),
                     'alias' => $alias,
                     'headers' => array_combine((array) $headers, (array) $fileHeaders),
