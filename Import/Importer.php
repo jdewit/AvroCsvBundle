@@ -221,7 +221,7 @@ class Importer
                         //Todo:
                         break;
                     case '2': // manyToOne
-                        continue;
+                        break;
                         // still needs work
                         $joinColumnId = $association['joinColumns'][0]['name'];
                         $legacyId = $row[array_search($this->caseConverter->toCamelCase($joinColumnId), $this->headers)];

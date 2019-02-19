@@ -38,7 +38,6 @@ class ImportFormType extends AbstractType
                         'pipe' => '|',
                         'colon' => ':',
                     ],
-                    'choices_as_values' => true,
                     'label' => 'Delimiter',
                 ]
             )

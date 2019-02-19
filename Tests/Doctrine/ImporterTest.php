@@ -5,7 +5,6 @@ namespace Avro\CsvBundle\Tests\Doctrine;
 use Avro\CaseBundle\Util\CaseConverter;
 use Avro\CsvBundle\Doctrine\Importer;
 use Avro\CsvBundle\Util\Reader;
-use Doctrine\Common\Annotations\AnnotationReader;
 
 class ImporterTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,19 +19,22 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
     {
         $caseConverter = new CaseConverter();
         $reader = new Reader();
-        $metadata = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
-        $metadata->expects($this->any())
+        $metadata = $this->createMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
+        $metadata
+            ->expects($this->any())
             ->method('hasField')
-            ->will($this->returnValue(true));
-        $metadataFactory = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadataFactory');
-        $metadataFactory->expects($this->any())
+            ->willReturn(true);
+        $metadataFactory = $this->createMock('Doctrine\Common\Persistence\Mapping\ClassMetadataFactory');
+        $metadataFactory
+            ->expects($this->any())
             ->method('getMetadataFor')
-			->will($this->returnValue($metadata));
-        $objectManager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
-        $objectManager->expects($this->any())
+            ->willReturn($metadata);
+        $objectManager = $this->createMock('Doctrine\Common\Persistence\ObjectManager');
+        $objectManager
+            ->expects($this->any())
             ->method('getMetadataFactory')
-            ->will($this->returnValue($metadataFactory));
-        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+            ->willReturn($metadataFactory);
+        $dispatcher = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
         $class = 'Avro\CsvBundle\Tests\TestEntity';
 
