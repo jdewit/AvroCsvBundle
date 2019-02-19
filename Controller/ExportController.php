@@ -7,6 +7,7 @@
 
 namespace Avro\CsvBundle\Controller;
 
+use Avro\CsvBundle\AvroCsvEvents;
 use Avro\CsvBundle\Event\ExportedEvent;
 use Avro\CsvBundle\Event\ExportEvent;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -21,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ExportController implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
+
     /**
      * Export a db table.
      *
@@ -36,11 +38,11 @@ class ExportController implements ContainerAwareInterface
         $exporter->init($class);
 
         $dispatcher = $this->container->get('event_dispatcher');
-        $dispatcher->dispatch('avro_csv.exporter_export', new ExportEvent($exporter));
+        $dispatcher->dispatch(AvroCsvEvents::EXPORT, new ExportEvent($exporter));
 
         $content = $exporter->getContent();
 
-        $dispatcher->dispatch('avro_csv.exporter_exported', new ExportedEvent($content));
+        $dispatcher->dispatch(AvroCsvEvents::EXPORTED, new ExportedEvent($content));
 
         $response = new Response($content);
         $response->headers->set('Content-Type', 'application/csv');

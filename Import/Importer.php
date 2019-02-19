@@ -8,10 +8,13 @@
 namespace Avro\CsvBundle\Import;
 
 use Avro\CaseBundle\Util\CaseConverter;
+use Avro\CsvBundle\AvroCsvEvents;
 use Avro\CsvBundle\Event\RowAddedEvent;
+use Avro\CsvBundle\Event\RowErrorEvent;
 use Avro\CsvBundle\Util\Reader;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -38,6 +41,10 @@ class Importer
      */
     protected $reader;
     /**
+     * @var EventDispatcherInterface
+     */
+    protected $dispatcher;
+    /**
      * @var int
      */
     protected $batchSize = 20;
@@ -45,6 +52,10 @@ class Importer
      * @var int
      */
     protected $importCount = 0;
+    /**
+     * @var int
+     */
+    protected $importErrors = 0;
     /**
      * @var CaseConverter
      */
@@ -81,8 +92,6 @@ class Importer
      * @param string $class        The class name of the entity
      * @param string $delimiter    The csv's delimiter
      * @param string $headerFormat The header case format
-     *
-     * @return bool true if successful
      */
     public function init($file, $class, $delimiter = ',', $headerFormat = 'title')
     {
@@ -102,20 +111,24 @@ class Importer
      * @param array $fields The fields to persist
      *
      * @return true if successful
+     *
+     * @throws MappingException
      */
     public function import($fields)
     {
         $fields = array_unique($this->caseConverter->toPascalCase($fields));
-
         while ($row = $this->reader->getRow()) {
-            if (0 !== $this->importCount && ($this->importCount % $this->batchSize) === 0) {
-                $this->addRow($row, $fields, true);
+            if (0 !== $this->importCount && 0 === ($this->importCount % $this->batchSize)) {
+                $result = $this->addRow($row, $fields, true);
             } else {
-                $this->addRow($row, $fields, false);
+                $result = $this->addRow($row, $fields, false);
             }
-            ++$this->importCount;
+            if ($result) {
+                ++$this->importCount;
+            } else {
+                ++$this->importErrors;
+            }
         }
-
         // one last flush to make sure no persisted objects get left behind
         $this->objectManager->flush();
 
@@ -132,7 +145,7 @@ class Importer
     public function toFormFieldName($input)
     {
         if (is_array($input)) {
-            $result = array();
+            $result = [];
             foreach ($input as $val) {
                 $result[] = $this->convertToFormFieldName($val);
             }
@@ -156,17 +169,40 @@ class Importer
     }
 
     /**
+     * Get import count.
+     *
+     * @return int
+     */
+    public function getImportCount()
+    {
+        return $this->importCount;
+    }
+
+    /**
+     * Get import errors.
+     *
+     * @return int
+     */
+    public function getImportErrors()
+    {
+        return $this->importErrors;
+    }
+
+    /**
      * Add Csv row to db.
      *
      * @param array $row      An array of data
      * @param array $fields   An array of the fields to import
      * @param bool  $andFlush Flush the ObjectManager
+     *
+     * @return bool
+     *
+     * @throws MappingException
      */
     private function addRow($row, $fields, $andFlush = true)
     {
         // Create new entity
         $entity = new $this->class();
-
         if (in_array('Id', $fields)) {
             $key = array_search('Id', $fields);
             if ($this->metadata->hasField('legacyId')) {
@@ -174,7 +210,6 @@ class Importer
             }
             unset($fields[$key]);
         }
-
         // loop through fields and set to row value
         foreach ($fields as $k => $v) {
             if ($this->metadata->hasField(lcfirst($v))) {
@@ -186,13 +221,13 @@ class Importer
                         //Todo:
                         break;
                     case '2': // manyToOne
-                        continue;
+                        break;
                         // still needs work
                         $joinColumnId = $association['joinColumns'][0]['name'];
                         $legacyId = $row[array_search($this->caseConverter->toCamelCase($joinColumnId), $this->headers)];
                         if ($legacyId) {
                             try {
-                                $criteria = array('legacyId' => $legacyId);
+                                $criteria = ['legacyId' => $legacyId];
                                 if ($this->useOwner) {
                                     $criteria['owner'] = $this->owner->getId();
                                 }
@@ -219,26 +254,20 @@ class Importer
                 }
             }
         }
+        // Allow RowAddedEvent listeners to nullify objects (i.e. when invalid)
+        $event = new RowAddedEvent($entity, $row, $fields);
+        $this->dispatcher->dispatch(AvroCsvEvents::ROW_ADDED, $event);
+        $entity = $event->getObject();
+        if (null === $entity) {
+            $this->dispatcher->dispatch(AvroCsvEvents::ROW_ERROR, new RowErrorEvent($row, $fields));
 
-        $this->dispatcher->dispatch('avro_csv.row_added', new RowAddedEvent($entity, $row, $fields));
-
-        // Allow the RowAddedEvent Listener to nullify invalid objects
-        if (null !== $entity) {
-            $this->objectManager->persist($entity);
+            return false;
         }
-
+        $this->objectManager->persist($entity);
         if ($andFlush) {
             $this->objectManager->flush();
         }
-    }
 
-    /**
-     * Get import count.
-     *
-     * @return int
-     */
-    public function getImportCount()
-    {
-        return $this->importCount;
+        return true;
     }
 }

@@ -30,24 +30,28 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $fields = array('id', 'field1', 'field2');
+        $fields = ['id', 'field1', 'field2'];
         $this->fields = $fields;
         $caseConverter = new CaseConverter();
         $reader = new Reader();
-        $metadata = $this->getMockForAbstractClass('Doctrine\Common\Persistence\Mapping\ClassMetadata', array('hasField'));
+        $metadata = $this->getMockForAbstractClass('Doctrine\Common\Persistence\Mapping\ClassMetadata', ['hasField']);
         $metadata->expects($this->any())
             ->method('hasField')
-            ->will($this->returnCallback(function ($value) use ($fields) {
-                return in_array($value, $fields);
-            }));
-        $objectManager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
+            ->will(
+                $this->returnCallback(
+                    function ($value) use ($fields) {
+                        return in_array($value, $fields);
+                    }
+                )
+            );
+        $objectManager = $this->createMock('Doctrine\Common\Persistence\ObjectManager');
         $objectManager->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnValue($metadata));
-        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+            ->willReturn($metadata);
+        $dispatcher = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $dispatcher->expects($this->any())
             ->method('dispatch')
-            ->will($this->returnValue('true'));
+            ->willReturn('true');
 
         $this->importer = new Importer($reader, $dispatcher, $caseConverter, $objectManager, 5);
 

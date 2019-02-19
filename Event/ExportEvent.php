@@ -8,7 +8,7 @@
 namespace Avro\CsvBundle\Event;
 
 use Avro\CsvBundle\Export\ExporterInterface;
-use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
