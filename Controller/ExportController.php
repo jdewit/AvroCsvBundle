@@ -10,8 +10,10 @@ namespace Avro\CsvBundle\Controller;
 use Avro\CsvBundle\AvroCsvEvents;
 use Avro\CsvBundle\Event\ExportedEvent;
 use Avro\CsvBundle\Event\ExportEvent;
+use Avro\CsvBundle\Export\ExporterInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -22,6 +24,21 @@ use Symfony\Component\HttpFoundation\Response;
 class ExportController implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
+
+    private $exporter;
+    private $eventDispatcher;
+
+    /**
+     * ExportController constructor.
+     *
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param ExporterInterface        $exporter
+     */
+    public function __construct(EventDispatcherInterface $eventDispatcher, ExporterInterface $exporter)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+        $this->exporter = $exporter;
+    }
 
     /**
      * Export a db table.
@@ -34,15 +51,13 @@ class ExportController implements ContainerAwareInterface
     {
         $class = $this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias));
 
-        $exporter = $this->container->get('avro_csv.exporter');
-        $exporter->init($class);
+        $this->exporter->init($class);
 
-        $dispatcher = $this->container->get('event_dispatcher');
-        $dispatcher->dispatch(AvroCsvEvents::EXPORT, new ExportEvent($exporter));
+        $this->eventDispatcher->dispatch(AvroCsvEvents::EXPORT, new ExportEvent($this->exporter));
 
-        $content = $exporter->getContent();
+        $content = $this->exporter->getContent();
 
-        $dispatcher->dispatch(AvroCsvEvents::EXPORTED, new ExportedEvent($content));
+        $this->eventDispatcher->dispatch(AvroCsvEvents::EXPORTED, new ExportedEvent($content));
 
         $response = new Response($content);
         $response->headers->set('Content-Type', 'application/csv');

@@ -1,11 +1,11 @@
 services:
-    avro_csv.importer:
-        class: Avro\CsvBundle\Util\Importer
-        arguments: ["@avro_csv.reader", "@event_dispatcher", "@avro_case.converter", "@doctrine.odm.mongodb.document_manager", "%avro_csv.batch_size%"]
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
 
-    avro_csv.iterator:
-        class: Avro\CsvBundle\Doctrine\ODM\Iterator
-        arguments: ["@doctrine.odm.mongodb.document_manager"]
+    Avro\CsvBundle\Import\Importer:
+        arguments:
+            $batchSize: '%avro_csv.batch_size%'
 
-
-
+    Avro\CsvBundle\Import\ImporterInterface: '@Avro\CsvBundle\Import\Importer'

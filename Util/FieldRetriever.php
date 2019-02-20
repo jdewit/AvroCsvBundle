@@ -9,7 +9,7 @@ namespace Avro\CsvBundle\Util;
 
 use Avro\CaseBundle\Util\CaseConverter;
 use Avro\CsvBundle\Annotation\ImportExclude;
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader as AnnotationReader;
 
 /**
  * Retrieves the fields of a Doctrine entity/document that
@@ -26,7 +26,7 @@ class FieldRetriever
      * @param AnnotationReader $annotationReader The annotation reader service
      * @param CaseConverter    $caseConverter    The caseConverter service
      */
-    public function __construct($annotationReader, CaseConverter $caseConverter)
+    public function __construct(AnnotationReader $annotationReader, CaseConverter $caseConverter)
     {
         $this->annotationReader = $annotationReader;
         $this->caseConverter = $caseConverter;

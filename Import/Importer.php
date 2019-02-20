@@ -22,7 +22,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-class Importer
+class Importer implements ImporterInterface
 {
     /**
      * @var string[]

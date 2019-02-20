@@ -1,8 +1,15 @@
 services:
-    avro_csv.importer:
-        class: Avro\CsvBundle\Import\Importer
-        arguments: ["@avro_csv.reader", "@event_dispatcher", "@avro_case.converter", "@doctrine.orm.entity_manager", "%avro_csv.batch_size%"]
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
 
-    avro_csv.exporter:
-        class: Avro\CsvBundle\Export\Doctrine\ORM\Exporter
-        arguments: ["@doctrine.orm.entity_manager"]
+    Avro\CsvBundle\Import\Importer:
+        arguments:
+            $batchSize: '%avro_csv.batch_size%'
+
+    Avro\CsvBundle\Import\ImporterInterface: '@Avro\CsvBundle\Import\Importer'
+
+    Avro\CsvBundle\Export\Doctrine\ORM\Exporter: ~
+
+    Avro\CsvBundle\Export\ExporterInterface: '@Avro\CsvBundle\Export\Doctrine\ORM\Exporter'

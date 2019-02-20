@@ -41,15 +41,15 @@ Simply add it to your apps composer.json file
 Enable the bundle in the kernel as well as the dependent AvroCaseBundle:
 
 ``` php
-// app/AppKernel.php
-    new Avro\CsvBundle\AvroCsvBundle(),
-    new Avro\CaseBundle\AvroCaseBundle()
+// config/bundles.php
+    Avro\CsvBundle\AvroCsvBundle::class => ['all' => true],
+    Avro\CaseBundle\AvroCaseBundle::class => ['all' => true],
 ```
 
 Configuration
 -------------
 
-Add this required config to your app/config/config.yml file
+Add this required config to your config/packages/avro_csv.yaml file
 
 ``` yaml
 avro_csv:
@@ -59,7 +59,7 @@ avro_csv:
     sample_count: 5 # The number of sample rows to show during mapping
 ```
 
-Add routes to your app/config/routing.yml file
+Add routes to your config/routes/avro_csv.yaml file
 
 ``` yaml
 AvroCsvBundle:
@@ -142,18 +142,20 @@ namespace Avro\CrmBundle\Listener;
 
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
+use Avro\CsvBundle\AvroCsvEvents;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Csv import listener
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-class ImportListener
+class ImportListener implements EventSubscriberInterface
 {
-    protected $em;
-    protected $context;
+    private $em;
+    private $context;
 
     /**
      * @param EntityManager            $em      The entity manager
@@ -163,6 +165,13 @@ class ImportListener
     {
         $this->em = $em;
         $this->context = $context;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            AvroCsvEvents::ROW_ADDED => 'setCreatedBy',
+        ];
     }
 
     /**
@@ -181,15 +190,7 @@ class ImportListener
 }
 ```
 
-Register your listener
-
-``` yaml
-services:
-    import.listener:
-        class: Avro\CrmBundle\Listener\ImportListener
-        arguments: ["@doctrine.orm.entity_manager", "@security.context"]
-        tags:
-            - { name: kernel.event_listener, event: avro_csv.row_added, method: setCreatedBy }
+Register your listener or use autowiring
 ```
 
 Exporting
@@ -206,18 +207,26 @@ the queryBuilder from the exporter and add your constraints before calling "getC
 Ex.
 
 ``` php
+namespace App\Controller;
+
+use Avro\CsvBundle\Export\ExporterInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+
+class ExportController extends AbstractController
+{
     /**
      * Export a db table.
      *
-     * @param string $alias The objects alias
+     * @param ExporterInterface $alias The exporter
+     * @param string            $alias The objects alias
      *
-     * @return View
+     * @return Response
      */
-    public function exportAction($alias)
+    public function exportAction(ExporterInterface $exporter), string $alias): Response
     {
-        $class = $this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias));
+        $class = $this->getParameter(sprintf('avro_csv.objects.%s.class', $alias));
 
-        $exporter = $this->container->get('avro_csv.exporter');
         $exporter->init($class);
 
         // customize the query
@@ -232,8 +241,11 @@ Ex.
 
         return $response;
     }
+}
 
 ```
+
+Register your controller or use your already setup autowiring
 
 To Do:
 ------
