@@ -9,7 +9,7 @@ namespace Avro\CsvBundle\Export\Doctrine\ORM;
 
 use Avro\CsvBundle\Export\Exporter as BaseExporter;
 use Avro\CsvBundle\Export\ExporterInterface;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Import csv to doctrine entity/document.
@@ -21,9 +21,9 @@ class Exporter extends BaseExporter implements ExporterInterface
     protected $entityManager;
 
     /**
-     * @param EntityManager $entityManager The csv entityManager
+     * @param EntityManagerInterface $entityManager The csv entityManager
      */
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
