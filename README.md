@@ -34,14 +34,13 @@ This bundle is listed on packagist.
 
 Simply add it to your apps composer.json file
 
-``` js
+```json
     "avro/csv-bundle": "*"
 ```
 
-Enable the bundle in the kernel as well as the dependent AvroCaseBundle:
+Enable the bundle in config/bundles.php as well as the dependent AvroCaseBundle:
 
-``` php
-// config/bundles.php
+```php
     Avro\CsvBundle\AvroCsvBundle::class => ['all' => true],
     Avro\CaseBundle\AvroCaseBundle::class => ['all' => true],
 ```
@@ -49,9 +48,10 @@ Enable the bundle in the kernel as well as the dependent AvroCaseBundle:
 Configuration
 -------------
 
-Add this required config to your config/packages/avro_csv.yaml file
+Add this required config
 
-``` yaml
+```yaml
+# config/packages/avro_csv.yaml
 avro_csv:
     db_driver: orm # supports orm
     batch_size: 15 # The batch size between flushing & clearing the doctrine object manager
@@ -59,16 +59,18 @@ avro_csv:
     sample_count: 5 # The number of sample rows to show during mapping
 ```
 
-Add routes to your config/routes/avro_csv.yaml file
+Add routes to your config
 
-``` yaml
-AvroCsvBundle:
+```yaml
+# config/routes/avro_csv.yaml
+avro_csv:
     resource: "@AvroCsvBundle/Resources/config/routing.yml"
 ```
 
 Add the entities/documents you want to implement importing/exporting for
 
-``` yaml
+```yaml
+# config/packages/avro_csv.yaml
 avro_csv:
     # 
     objects: # the entities/documents you want to be able to import/export data with 
@@ -113,7 +115,7 @@ add them to the objects node as mentioned previously.
 
 Then just include a link to specific import page like so:
 
-``` html
+```html
 <a href="{{ path('avro_csv_import_upload', {'alias': 'client'}) }}">Go to import page</a>
 ```
 
@@ -132,25 +134,21 @@ Want to customize certain fields on each row? No problem.
 
 An event is fired when a row is added that you can tap into to customize each row of data.
 
-Just create a custom listener in your app that listens for the 'avro_csv.row_added' event.
+Just create a custom listener in your app that listens for the ``AvroCsvEvents::ROW_ADDED`` event.
 
 For example...
 
-``` php
-<?php
-namespace Avro\CrmBundle\Listener;
-
-use Symfony\Component\Security\Core\SecurityContextInterface;
+```php
+namespace App\EventListener;
 
 use Avro\CsvBundle\AvroCsvEvents;
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\EventDispatcher\Event;
+use Avro\CsvBundle\Event\RowAddedEvent;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Security\Core\SecurityContextInterface;
 
 /**
  * Csv import listener
- *
- * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
 class ImportListener implements EventSubscriberInterface
 {
@@ -158,15 +156,15 @@ class ImportListener implements EventSubscriberInterface
     private $context;
 
     /**
-     * @param EntityManager            $em      The entity manager
+     * @param EntityManagerInterface   $em      The entity manager
      * @param SecurityContextInterface $context The security context
      */
-    public function __construct(EntityManager $em, SecurityContextInterface $context)
+    public function __construct(EntityManagerInterface $em, SecurityContextInterface $context)
     {
         $this->em = $em;
         $this->context = $context;
     }
-
+    
     public static function getSubscribedEvents()
     {
         return [
@@ -177,9 +175,9 @@ class ImportListener implements EventSubscriberInterface
     /**
      * Set the objects createdBy field
      *
-     * @param Event $event
+     * @param RowAddedEvent $event
      */
-    public function setCreatedBy(Event $event)
+    public function setCreatedBy(RowAddedEvent $event)
     {
         $object = $event->getObject();
 
@@ -191,7 +189,6 @@ class ImportListener implements EventSubscriberInterface
 ```
 
 Register your listener or use autowiring
-```
 
 Exporting
 ---------
@@ -206,7 +203,7 @@ the queryBuilder from the exporter and add your constraints before calling "getC
 
 Ex.
 
-``` php
+```php
 namespace App\Controller;
 
 use Avro\CsvBundle\Export\ExporterInterface;
