@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -87,7 +87,7 @@ class ImportController implements ContainerAwareInterface
      * Move the csv file to a temp dir and get the user to map the fields.
      *
      * @param Request $request The request
-     * @param string $alias The objects alias
+     * @param string  $alias   The objects alias
      *
      * @return Response
      */
@@ -118,7 +118,7 @@ class ImportController implements ContainerAwareInterface
 
                 // Recreate form and create proper fields child for each header
                 $form = $this->formFactory->create(ImportFormType::class, null, ['field_choices' => $fieldChoices]);
-                $form->get('fields')->setData(array_fill_keys((array)$headers, null));
+                $form->get('fields')->setData(array_fill_keys((array) $headers, null));
                 $form->handleRequest($request);
 
                 $rows = $this->reader->getRows($this->container->getParameter('avro_csv.sample_count'));
@@ -129,7 +129,7 @@ class ImportController implements ContainerAwareInterface
                         [
                             'form' => $form->createView(),
                             'alias' => $alias,
-                            'headers' => array_combine((array)$headers, (array)$fileHeaders),
+                            'headers' => array_combine((array) $headers, (array) $fileHeaders),
                             'headersJson' => json_encode(
                                 $this->caseConverter->toTitleCase($fileHeaders),
                                 JSON_FORCE_OBJECT
@@ -152,7 +152,7 @@ class ImportController implements ContainerAwareInterface
      * Previews the uploaded csv and allows the user to map the fields.
      *
      * @param Request $request The request
-     * @param string $alias The objects alias
+     * @param string  $alias   The objects alias
      *
      * @return Response
      */
@@ -184,7 +184,7 @@ class ImportController implements ContainerAwareInterface
 
                 $request->getSession()->getFlashBag()->set(
                     'success',
-                    $this->importer->getImportCount() . ' items imported. ' . $this->importer->getImportErrors() . ' errors.'
+                    $this->importer->getImportCount().' items imported. '.$this->importer->getImportErrors().' errors.'
                 );
             } else {
                 $request->getSession()->getFlashBag()->set('error', 'Import failed. Please try again.');

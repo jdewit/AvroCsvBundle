@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -33,7 +33,7 @@ class ExportEvent extends Event
      *
      * @return ExporterInterface
      */
-    public function getExporter()
+    public function getExporter(): ExporterInterface
     {
         return $this->exporter;
     }
@@ -43,7 +43,7 @@ class ExportEvent extends Event
      *
      * @return QueryBuilder
      */
-    public function getQueryBuilder()
+    public function getQueryBuilder(): QueryBuilder
     {
         return $this->exporter->getQueryBuilder();
     }

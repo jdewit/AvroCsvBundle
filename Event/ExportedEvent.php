@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -21,7 +21,7 @@ class ExportedEvent extends Event
     /**
      * @param string $content Csv data
      */
-    public function __construct($content)
+    public function __construct(string $content)
     {
         $this->content = $content;
     }
@@ -31,7 +31,7 @@ class ExportedEvent extends Event
      *
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->content;
     }

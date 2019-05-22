@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -21,11 +21,11 @@ class RowAddedEvent extends Event
     protected $fields;
 
     /**
-     * @param \stdClass|null $object The new object being persisted
-     * @param array          $row    The row being imported
-     * @param array          $fields The mapped fields
+     * @param object $object The new object being persisted
+     * @param array  $row    The row being imported
+     * @param array  $fields The mapped fields
      */
-    public function __construct($object, array $row, array $fields)
+    public function __construct(object $object, array $row, array $fields)
     {
         $this->object = $object;
         $this->row = $row;
@@ -33,9 +33,9 @@ class RowAddedEvent extends Event
     }
 
     /**
-     * @param \stdClass|null $object
+     * @param object|null $object
      */
-    public function setObject($object)
+    public function setObject(?object $object): void
     {
         $this->object = $object;
     }
@@ -43,9 +43,9 @@ class RowAddedEvent extends Event
     /**
      * Get the doctrine object.
      *
-     * @return \stdClass|null
+     * @return object|null
      */
-    public function getObject()
+    public function getObject(): ?object
     {
         return $this->object;
     }
@@ -55,7 +55,7 @@ class RowAddedEvent extends Event
      *
      * @return array
      */
-    public function getRow()
+    public function getRow(): array
     {
         return $this->row;
     }
@@ -65,7 +65,7 @@ class RowAddedEvent extends Event
      *
      * @return array
      */
-    public function getFields()
+    public function getFields(): array
     {
         return $this->fields;
     }

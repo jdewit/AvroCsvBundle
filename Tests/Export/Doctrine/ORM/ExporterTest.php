@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -8,12 +8,16 @@
 namespace Avro\CsvBundle\Tests\Export\Doctrine\ORM;
 
 use Avro\CsvBundle\Export\Doctrine\ORM\Exporter;
+use Avro\CsvBundle\Tests\TestEntity;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test exporter class.
  */
-class ExporterTest extends \PHPUnit_Framework_TestCase
+class ExporterTest extends TestCase
 {
     /**
      * @var Exporter
@@ -22,34 +26,31 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $query = $this->getMockBuilder('Doctrine\ORM\AbstractQuery')
-            ->disableOriginalConstructor()
-            ->setMethods(['iterate', 'HYDRATE_ARRAY', 'getSQL', '_doExecute'])
-            ->getMock();
-        $query->expects($this->any())
+        $query = $this->getMockForAbstractClass(AbstractQuery::class, [], '', false, true, true, ['iterate', 'HYDRATE_ARRAY', 'getSQL', '_doExecute']);
+        $query
             ->method('iterate')
             ->willReturn([0 => [0 => ['row 1' => 'val\'1', 'row 2' => 'val,2', 'row 3' => 'val"3']]]);
-        $queryBuilder = $this->getMockBuilder('Doctrine\ORM\QueryBuilder')
+        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
             ->disableOriginalConstructor()
             ->setMethods(['select', 'from', 'getQuery'])
             ->getMock();
-        $queryBuilder->expects($this->any())
+        $queryBuilder
             ->method('select')
             ->willReturn($queryBuilder);
-        $queryBuilder->expects($this->any())
+        $queryBuilder
             ->method('from')
             ->willReturn($queryBuilder);
-        $queryBuilder->expects($this->any())
+        $queryBuilder
             ->method('from')
             ->willReturn($queryBuilder);
-        $queryBuilder->expects($this->any())
+        $queryBuilder
             ->method('getQuery')
             ->willReturn($query);
-        $entityManager = $this->getMockBuilder('Doctrine\ORM\EntityManager')
+        $entityManager = $this->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
             ->setMethods(['createQueryBuilder'])
             ->getMock();
-        $entityManager->expects($this->any())
+        $entityManager
             ->method('createQueryBuilder')
             ->willReturn($queryBuilder);
 
@@ -61,8 +62,8 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
      */
     public function testInit()
     {
-        $this->exporter->init('Avro\CsvBundle\Tests\TestEntity');
-        $this->assertTrue($this->exporter->getQueryBuilder() instanceof QueryBuilder);
+        $this->exporter->init(TestEntity::class);
+        $this->assertInstanceOf(QueryBuilder::class, $this->exporter->getQueryBuilder());
     }
 
     /**
@@ -71,7 +72,7 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
     public function testArrayToCsv()
     {
         $this->assertEquals(
-            '"val\'1","val,2","val""3"' . "\n",
+            '"val\'1","val,2","val""3"'."\n",
             $this->exporter->arrayToCsv(['val\'1', 'val,2', 'val"3'])
         );
     }
@@ -86,7 +87,7 @@ class ExporterTest extends \PHPUnit_Framework_TestCase
         $expected .= '"val\'1","val,2","val""3"';
         $expected .= "\n";
 
-        $this->exporter->init('Avro\CsvBundle\Tests\TestEntity');
+        $this->exporter->init(TestEntity::class);
         $this->assertEquals(
             $expected,
             $this->exporter->getContent()

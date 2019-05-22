@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -9,12 +9,17 @@ namespace Avro\CsvBundle\Tests\Import;
 
 use Avro\CaseBundle\Util\CaseConverter;
 use Avro\CsvBundle\Import\Importer;
+use Avro\CsvBundle\Tests\TestEntity;
 use Avro\CsvBundle\Util\Reader;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Test importer class.
  */
-class ImporterTest extends \PHPUnit_Framework_TestCase
+class ImporterTest extends TestCase
 {
     /**
      * @var string[]
@@ -31,31 +36,40 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $fields = ['id', 'field1', 'field2'];
-        $this->fields = $fields;
+        $assocs = ['assoc'];
+        $customs = ['assoc'];
+        $this->fields = array_merge($fields, $assocs, $customs);
         $caseConverter = new CaseConverter();
         $reader = new Reader();
-        $metadata = $this->getMockForAbstractClass('Doctrine\Common\Persistence\Mapping\ClassMetadata', ['hasField']);
-        $metadata->expects($this->any())
+        $metadata = $this->createMock(ClassMetadataInfo::class);
+        $metadata
             ->method('hasField')
-            ->will(
-                $this->returnCallback(
-                    function ($value) use ($fields) {
-                        return in_array($value, $fields);
-                    }
-                )
+            ->willReturnCallback(
+                static function ($value) use ($fields) {
+                    return in_array($value, $fields, true);
+                }
             );
-        $objectManager = $this->createMock('Doctrine\Common\Persistence\ObjectManager');
-        $objectManager->expects($this->any())
+        $metadata
+            ->method('hasAssociation')
+            ->willReturnCallback(
+                static function ($value) use ($assocs) {
+                    return in_array($value, $assocs, true);
+                }
+            );
+        $metadata
+            ->method('getAssociationMapping')
+            ->willReturn([]);
+        $objectManager = $this->createMock(ObjectManager::class);
+        $objectManager
             ->method('getClassMetadata')
             ->willReturn($metadata);
-        $dispatcher = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $dispatcher->expects($this->any())
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $dispatcher
             ->method('dispatch')
             ->willReturn('true');
 
         $this->importer = new Importer($reader, $dispatcher, $caseConverter, $objectManager, 5);
-
-        $this->importer->init(__DIR__.'/../import.csv', 'Avro\CsvBundle\Tests\TestEntity', ',', 'title');
+        $this->importer->init(__DIR__.'/../import.csv', TestEntity::class);
     }
 
     /**
@@ -63,11 +77,7 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function testImport()
     {
-        $this->assertEquals(
-            true,
-            $this->importer->import($this->fields)
-        );
-
+        $this->importer->import($this->fields);
         $this->assertEquals(
             3,
             $this->importer->getImportCount()

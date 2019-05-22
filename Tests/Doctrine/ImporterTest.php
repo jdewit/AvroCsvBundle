@@ -1,12 +1,21 @@
 <?php
 
+/*
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Avro\CsvBundle\Tests\Doctrine;
 
 use Avro\CaseBundle\Util\CaseConverter;
 use Avro\CsvBundle\Doctrine\Importer;
+use Avro\CsvBundle\Tests\TestEntity;
 use Avro\CsvBundle\Util\Reader;
+use Doctrine\Common\Persistence\ObjectManager;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class ImporterTest extends \PHPUnit_Framework_TestCase
+class ImporterTest extends TestCase
 {
     protected $fieldRetriever;
     protected $class;
@@ -19,27 +28,13 @@ class ImporterTest extends \PHPUnit_Framework_TestCase
     {
         $caseConverter = new CaseConverter();
         $reader = new Reader();
-        $metadata = $this->createMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
-        $metadata
-            ->expects($this->any())
-            ->method('hasField')
-            ->willReturn(true);
-        $metadataFactory = $this->createMock('Doctrine\Common\Persistence\Mapping\ClassMetadataFactory');
-        $metadataFactory
-            ->expects($this->any())
-            ->method('getMetadataFor')
-            ->willReturn($metadata);
-        $objectManager = $this->createMock('Doctrine\Common\Persistence\ObjectManager');
-        $objectManager
-            ->expects($this->any())
-            ->method('getMetadataFactory')
-            ->willReturn($metadataFactory);
-        $dispatcher = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $objectManager = $this->createMock(ObjectManager::class);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
-        $class = 'Avro\CsvBundle\Tests\TestEntity';
+        $class = TestEntity::class;
 
         $this->importer = new Importer($reader, $dispatcher, $caseConverter, $objectManager, 5);
-        $this->importer->init(__DIR__.'/../import.csv', $class, ',', 'title');
+        $this->importer->init(__DIR__.'/../import.csv', $class);
     }
 
     /**

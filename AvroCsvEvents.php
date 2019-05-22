@@ -46,4 +46,20 @@ final class AvroCsvEvents
      * @Event("Avro\CsvBundle\Event\RowErrorEvent")
      */
     const ROW_ERROR = 'avro_csv.row_error';
+    /**
+     * The ASSOCIATION_FIELD event occurs when the importer hits an association field.
+     *
+     * This event allows you to implement handling of the association.
+     *
+     * @Event("Avro\CsvBundle\Event\AssociationFieldEvent")
+     */
+    const ASSOCIATION_FIELD = 'avro_csv.association_field';
+    /**
+     * The CUSTOM_FIELD event occurs when the importer hits an import field that is not recognized by Doctrine.
+     *
+     * This event allows you to implement handling of these fields.
+     *
+     * @Event("Avro\CsvBundle\Event\CustomFieldEvent")
+     */
+    const CUSTOM_FIELD = 'avro_csv.custom_field';
 }

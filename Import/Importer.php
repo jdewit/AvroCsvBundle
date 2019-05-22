@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -9,6 +9,8 @@ namespace Avro\CsvBundle\Import;
 
 use Avro\CaseBundle\Util\CaseConverter;
 use Avro\CsvBundle\AvroCsvEvents;
+use Avro\CsvBundle\Event\AssociationFieldEvent;
+use Avro\CsvBundle\Event\CustomFieldEvent;
 use Avro\CsvBundle\Event\RowAddedEvent;
 use Avro\CsvBundle\Event\RowErrorEvent;
 use Avro\CsvBundle\Util\Reader;
@@ -93,7 +95,7 @@ class Importer implements ImporterInterface
      * @param string $delimiter    The csv's delimiter
      * @param string $headerFormat The header case format
      */
-    public function init($file, $class, $delimiter = ',', $headerFormat = 'title')
+    public function init($file, $class, $delimiter = ',', $headerFormat = 'title'): void
     {
         $this->reader->open($file, $delimiter);
         $this->class = $class;
@@ -110,11 +112,9 @@ class Importer implements ImporterInterface
      *
      * @param array $fields The fields to persist
      *
-     * @return true if successful
-     *
      * @throws MappingException
      */
-    public function import($fields)
+    public function import($fields): void
     {
         $fields = array_unique($this->caseConverter->toPascalCase($fields));
         while ($row = $this->reader->getRow()) {
@@ -131,8 +131,6 @@ class Importer implements ImporterInterface
         }
         // one last flush to make sure no persisted objects get left behind
         $this->objectManager->flush();
-
-        return true;
     }
 
     /**
@@ -157,23 +155,11 @@ class Importer implements ImporterInterface
     }
 
     /**
-     * Generate a hash string suitable as form field name.
-     *
-     * @param string $input
-     *
-     * @return string
-     */
-    private function convertToFormFieldName($input)
-    {
-        return sha1($input);
-    }
-
-    /**
      * Get import count.
      *
      * @return int
      */
-    public function getImportCount()
+    public function getImportCount(): int
     {
         return $this->importCount;
     }
@@ -183,9 +169,21 @@ class Importer implements ImporterInterface
      *
      * @return int
      */
-    public function getImportErrors()
+    public function getImportErrors(): int
     {
         return $this->importErrors;
+    }
+
+    /**
+     * Generate a hash string suitable as form field name.
+     *
+     * @param string $input
+     *
+     * @return string
+     */
+    private function convertToFormFieldName($input): string
+    {
+        return sha1($input);
     }
 
     /**
@@ -195,63 +193,25 @@ class Importer implements ImporterInterface
      * @param array $fields   An array of the fields to import
      * @param bool  $andFlush Flush the ObjectManager
      *
-     * @return bool
-     *
      * @throws MappingException
+     *
+     * @return bool
      */
-    private function addRow($row, $fields, $andFlush = true)
+    private function addRow($row, $fields, $andFlush = true): bool
     {
         // Create new entity
         $entity = new $this->class();
-        if (in_array('Id', $fields)) {
-            $key = array_search('Id', $fields);
-            if ($this->metadata->hasField('legacyId')) {
-                $entity->setLegacyId($row[$key]);
-            }
-            unset($fields[$key]);
-        }
-        // loop through fields and set to row value
+        // Loop through fields and set to row value
         foreach ($fields as $k => $v) {
             if ($this->metadata->hasField(lcfirst($v))) {
-                $entity->{'set'.$fields[$k]}($row[$k]);
+                $entity->{'set'.$v}($row[$k]);
             } elseif ($this->metadata->hasAssociation(lcfirst($v))) {
-                $association = $this->metadata->getAssociationMapping(lcfirst($v));
-                switch ($association['type']) {
-                    case '1': // oneToOne
-                        //Todo:
-                        break;
-                    case '2': // manyToOne
-                        break;
-                        // still needs work
-                        $joinColumnId = $association['joinColumns'][0]['name'];
-                        $legacyId = $row[array_search($this->caseConverter->toCamelCase($joinColumnId), $this->headers)];
-                        if ($legacyId) {
-                            try {
-                                $criteria = ['legacyId' => $legacyId];
-                                if ($this->useOwner) {
-                                    $criteria['owner'] = $this->owner->getId();
-                                }
-
-                                $associationClass = new \ReflectionClass($association['targetEntity']);
-                                if ($associationClass->hasProperty('legacyId')) {
-                                    $relation = $this->objectManager->getRepository($association['targetEntity'])->findOneBy($criteria);
-                                    if ($relation) {
-                                        $entity->{'set'.ucfirst($association['fieldName'])}($relation);
-                                    }
-                                }
-                            } catch (\Exception $e) {
-                                // legacyId does not exist
-                                // fail silently
-                            }
-                        }
-                        break;
-                    case '4': // oneToMany
-                        //TODO:
-                        break;
-                    case '8': // manyToMany
-                        //TODO:
-                        break;
-                }
+                // Let implementors handle associations to allow complex cases
+                $event = new AssociationFieldEvent($entity, $this->metadata->getAssociationMapping(lcfirst($v)), $row, $fields, $this->headers, $k);
+                $this->dispatcher->dispatch(AvroCsvEvents::ASSOCIATION_FIELD, $event);
+            } elseif ($this->metadata->getReflectionClass()->hasProperty(lcfirst($v))) {
+                $event = new CustomFieldEvent($entity, $this->metadata->getReflectionClass(), $row, $fields, $this->headers, $k);
+                $this->dispatcher->dispatch(AvroCsvEvents::CUSTOM_FIELD, $event);
             }
         }
         // Allow RowAddedEvent listeners to nullify objects (i.e. when invalid)

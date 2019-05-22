@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -8,8 +8,9 @@
 namespace Avro\CsvBundle\Tests\Util;
 
 use Avro\CsvBundle\Util\Reader;
+use PHPUnit\Framework\TestCase;
 
-class ReaderTest extends \PHPUnit_Framework_TestCase
+class ReaderTest extends TestCase
 {
     /**
      * @var Reader

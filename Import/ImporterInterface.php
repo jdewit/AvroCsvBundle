@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -24,18 +24,16 @@ interface ImporterInterface
      * @param string $delimiter    The csv's delimiter
      * @param string $headerFormat The header case format
      */
-    public function init($file, $class, $delimiter = ',', $headerFormat = 'title');
+    public function init($file, $class, $delimiter = ',', $headerFormat = 'title'): void;
 
     /**
      * Import the csv and persist to database.
      *
      * @param array $fields The fields to persist
      *
-     * @return true if successful
-     *
      * @throws MappingException
      */
-    public function import($fields);
+    public function import($fields): void;
 
     /**
      * Converts a string to a format suitable as form name.
@@ -51,12 +49,12 @@ interface ImporterInterface
      *
      * @return int
      */
-    public function getImportCount();
+    public function getImportCount(): int;
 
     /**
      * Get import errors.
      *
      * @return int
      */
-    public function getImportErrors();
+    public function getImportErrors(): int;
 }

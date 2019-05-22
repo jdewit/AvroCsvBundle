@@ -127,6 +127,72 @@ Views
 The bundle comes with some basic twitter bootstrap views that you can 
 override by extending the bundle.
 
+Association mapping
+-------------------
+
+An event is fired when importing an association field to allow implementing your
+own logic fitting
+ 
+Just create a custom listener in your app that listens for the ``AvroCsvEvents::ASSOCIATION_FIELD`` event.
+
+A simple implementation getting an associated entity by name could look like:
+
+```php
+namespace App\EventListener;
+
+use Avro\CsvBundle\AvroCsvEvents;
+use Avro\CsvBundle\Event\AssociationFieldEvent;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+/**
+ * Csv import listener
+ */
+class ImportListener implements EventSubscriberInterface
+{
+    private $em;
+
+    /**
+     * @param EntityManagerInterface   $em      The entity manager
+     */
+    public function __construct(EntityManagerInterface $em)
+    {
+        $this->em = $em;
+    }
+    
+    public static function getSubscribedEvents()
+    {
+        return [
+            AvroCsvEvents::ASSOCIATION_FIELD => 'importAssociation',
+        ];
+    }
+
+    /**
+     * Set the objects createdBy field
+     *
+     * @param AssociationFieldEvent $event
+     */
+    public function importAssociation(AssociationFieldEvent $event)
+    {
+        $association = $event->getAssociationMapping();
+        switch ($association['type']) {
+            case ClassMetadataInfo::ONE_TO_ONE:
+            case ClassMetadataInfo::MANY_TO_ONE:
+                $relation = $this->em->getRepository($association['targetEntity'])->findOneBy(
+                    [
+                        'name' => $event->getRow()[$event->getIndex()],
+                    ]
+                );
+                if ($relation) {
+                    $event->getObject()->{'set'.ucfirst($association['fieldName'])}($relation);
+                }
+                break;
+        }
+    }
+}
+```
+
 Customizing each row
 --------------------
 
@@ -247,7 +313,6 @@ Register your controller or use your already setup autowiring
 To Do:
 ------
 
-- Allow association mapping 
 - Finish mongodb support
 
 Acknowledgements
