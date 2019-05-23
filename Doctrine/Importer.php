@@ -17,7 +17,7 @@ use Avro\CsvBundle\Import\Importer as BaseImporter;
 class Importer extends BaseImporter
 {
     /**
-     * Get the csv's header row.
+     * Get the CSV's header row.
      *
      * @return array
      */
@@ -27,7 +27,7 @@ class Importer extends BaseImporter
     }
 
     /**
-     * Get the csv's next row.
+     * Get the CSV's next row.
      *
      * @return array
      */

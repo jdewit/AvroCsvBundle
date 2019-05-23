@@ -19,6 +19,9 @@ class ImporterTest extends TestCase
 {
     protected $fieldRetriever;
     protected $class;
+    /**
+     * @var Importer
+     */
     protected $importer;
 
     /**
@@ -26,15 +29,23 @@ class ImporterTest extends TestCase
      */
     public function setUp()
     {
-        $caseConverter = new CaseConverter();
+        $caseConverter = $this->createMock(CaseConverter::class);
+        $caseConverter
+            ->method('convert')
+            ->willReturn(
+                [
+                    0 => 'Header 1',
+                    1 => 'Header 2',
+                    2 => 'Header 3',
+                ]
+            );
         $reader = new Reader();
         $objectManager = $this->createMock(ObjectManager::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
-        $class = TestEntity::class;
+        $this->class = TestEntity::class;
 
         $this->importer = new Importer($reader, $dispatcher, $caseConverter, $objectManager, 5);
-        $this->importer->init(__DIR__.'/../import.csv', $class);
     }
 
     /**
@@ -42,11 +53,28 @@ class ImporterTest extends TestCase
      */
     public function testGetHeaders()
     {
+        $this->importer->init(__DIR__.'/../import.csv', $this->class);
         $this->assertEquals(
             [
                 0 => 'Header 1',
                 1 => 'Header 2',
                 2 => 'Header 3',
+            ],
+            $this->importer->getHeaders()
+        );
+    }
+
+    /**
+     * Test getHeaders.
+     */
+    public function testGetFormHeaders()
+    {
+        $this->importer->init(__DIR__.'/../import.csv', $this->class, ',', 'form');
+        $this->assertEquals(
+            [
+                0 => sha1('Header 1'),
+                1 => sha1('Header 2'),
+                2 => sha1('Header 3'),
             ],
             $this->importer->getHeaders()
         );

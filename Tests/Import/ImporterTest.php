@@ -39,7 +39,20 @@ class ImporterTest extends TestCase
         $assocs = ['assoc'];
         $customs = ['assoc'];
         $this->fields = array_merge($fields, $assocs, $customs);
-        $caseConverter = new CaseConverter();
+        $caseConverter = $this->createMock(CaseConverter::class);
+        $caseConverter
+            ->method('convert')
+            ->willReturn(
+                [
+                    0 => 'Header 1',
+                    1 => 'Header 2',
+                    2 => 'Header 3',
+                ]
+            );
+        $caseConverter
+            ->method('toPascalCase')
+            ->with($this->fields)
+            ->willReturn(['Id', 'Field1', 'Field2', 'Assoc']);
         $reader = new Reader();
         $metadata = $this->createMock(ClassMetadataInfo::class);
         $metadata

@@ -23,12 +23,34 @@ class FieldRetrieverTest extends TestCase
      * @var string
      */
     protected $class;
+    /**
+     * @var CaseConverter|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $caseConverter;
 
     public function setUp()
     {
         $annotationReader = new AnnotationReader();
-        $caseConverter = new CaseConverter();
-        $this->fieldRetriever = new FieldRetriever($annotationReader, $caseConverter);
+        $this->caseConverter = $this->createMock(CaseConverter::class);
+        $this->caseConverter
+            ->method('convert')
+            ->willReturnMap(
+                [
+                    ['', 'title', ''],
+                    ['id', 'title', 'Id'],
+                    ['field1', 'title', 'Field1'],
+                    ['field2', 'title', 'Field2'],
+                    ['assoc', 'title', 'Assoc'],
+                    ['custom', 'title', 'Custom'],
+                    ['', 'camel', ''],
+                    ['id', 'camel', 'id'],
+                    ['field1', 'camel', 'field1'],
+                    ['field2', 'camel', 'field2'],
+                    ['assoc', 'camel', 'assoc'],
+                    ['custom', 'camel', 'custom'],
+                ]
+            );
+        $this->fieldRetriever = new FieldRetriever($annotationReader, $this->caseConverter);
         $this->class = TestEntity::class;
     }
 
