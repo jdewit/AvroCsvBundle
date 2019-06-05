@@ -24,8 +24,9 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('avro_csv');
+        $treeBuilder = new TreeBuilder('avro_csv');
+        $rootNode = method_exists(TreeBuilder::class, 'getRootNode') ? $treeBuilder->getRootNode() : $treeBuilder->root('avro_csv');
+
 
         $rootNode
             ->children()
