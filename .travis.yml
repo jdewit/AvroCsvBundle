@@ -5,6 +5,10 @@ cache:
         - $HOME/.composer/cache/files
         - $HOME/symfony-bridge/.phpunit
 
+env:
+  global:
+    - SYMFONY_DEPRECATIONS_HELPER="max[self]=0"
+
 matrix:
   fast_finish: true
   include:
@@ -20,7 +24,7 @@ matrix:
       # Test LTS versions. This makes sure we do not use Symfony packages with version greater
       # than 4 when 4 LTS is released. Read more at https://github.com/symfony/lts
 #    - php: 7.2
-#      env: DEPENDENCIES="symfony/lts:^4"
+#      env: SYMFONY_VERSION="~4.4.0" SYMFONY_DEPRECATIONS_HELPER="max[self]=0"
       # Latest commit to master
     - php: 7.3
       env: STABILITY="dev"
@@ -33,10 +37,9 @@ before_install:
   - |
     INI=~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
     echo memory_limit = -1 >> $INI
-  # Disable XDebug for Composer, only enable it later for coverage if needed
-  - phpenv config-rm xdebug.ini || true
+  - if [[ $COVERAGE != true ]]; then phpenv config-rm xdebug.ini || true; fi
   - if ! [ -z "$STABILITY" ]; then composer config minimum-stability ${STABILITY}; fi;
-  - if ! [ -v "$DEPENDENCIES" ]; then composer require --no-update ${DEPENDENCIES}; fi;
+  - if ! [ -v "$SYMFONY_VERSION" ]; then composer config extra.symfony.require "${SYMFONY_VERSION}"; fi;
 
 install:
   - composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
@@ -44,7 +47,6 @@ install:
 
 script:
     - composer validate --strict --no-check-all --no-check-lock
-    - if [[ $COVERAGE == true ]]; then phpenv config-add xdebug.ini || true; fi
     # simple-phpunit is the PHPUnit wrapper provided by the PHPUnit Bridge component and
     # it helps with testing legacy code and deprecations (composer require symfony/phpunit-bridge)
     - ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS

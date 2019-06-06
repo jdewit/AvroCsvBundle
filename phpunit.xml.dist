@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit bootstrap="./Tests/bootstrap.php" colors="true">
-    <php>
-        <env name="SYMFONY_PHPUNIT_VERSION" value="5.7" force="true" />
-    </php>
-
     <testsuites>
         <testsuite name="AvroCsvBundle test suite">
             <directory suffix="Test.php">./Tests</directory>
