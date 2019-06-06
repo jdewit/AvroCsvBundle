@@ -10,12 +10,14 @@ matrix:
   include:
       # Minimum supported dependencies with the latest and oldest PHP version
     - php: 7.3
-      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
+      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak"
     - php: 7.1
       env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
       # Test the latest stable release
     - php: 7.1
+      env: SYMFONY_DEPRECATIONS_HELPER=max[direct]=1
     - php: 7.2
+      env: SYMFONY_DEPRECATIONS_HELPER=max[direct]=1
     - php: 7.3
       env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text" SYMFONY_DEPRECATIONS_HELPER=max[direct]=1
       # Test LTS versions. This makes sure we do not use Symfony packages with version greater
