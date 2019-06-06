@@ -26,9 +26,9 @@
         "twig/twig": "*",
         "doctrine/doctrine-bundle": "*",
         "doctrine/orm": "*",
-        "phpunit/phpunit": "^5.7",
-        "symfony/form": "~4.0",
-        "symfony/framework-bundle": "~4.0"
+        "symfony/form": "^4.0",
+        "symfony/framework-bundle": "^4.0",
+        "symfony/phpunit-bridge": "^4.1.8"
     },
     "autoload": {
         "psr-4": { "Avro\\CsvBundle\\": "" }
