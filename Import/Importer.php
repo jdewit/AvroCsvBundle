@@ -116,7 +116,7 @@ class Importer implements ImporterInterface
      */
     public function import($fields): void
     {
-        $fields = array_unique($this->caseConverter->toPascalCase($fields));
+        $fields = $this->caseConverter->toPascalCase($fields);
         while ($row = $this->reader->getRow()) {
             if (0 !== $this->importCount && 0 === ($this->importCount % $this->batchSize)) {
                 $result = $this->addRow($row, $fields, true);
