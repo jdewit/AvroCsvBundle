@@ -35,7 +35,7 @@ This bundle is listed on packagist.
 Simply add it to your apps composer.json file
 
 ```json
-    "avro/csv-bundle": "*"
+    "avro/csv-bundle": "^0.4.2"
 ```
 
 Enable the bundle in config/bundles.php as well as the dependent AvroCaseBundle:
