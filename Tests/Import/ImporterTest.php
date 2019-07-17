@@ -33,7 +33,7 @@ class ImporterTest extends TestCase
     /**
      * Setup test class.
      */
-    public function setUp()
+    public function setUp(): void
     {
         $fields = ['id', 'field1', 'field2'];
         $assocs = ['assoc'];
@@ -88,7 +88,7 @@ class ImporterTest extends TestCase
     /**
      * Test import.
      */
-    public function testImport()
+    public function testImport(): void
     {
         $this->importer->import($this->fields);
         $this->assertEquals(

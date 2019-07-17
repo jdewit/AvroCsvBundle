@@ -17,13 +17,13 @@ class ReaderTest extends TestCase
      */
     protected $reader;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->reader = new Reader();
         $this->reader->open(__DIR__.'/../import.csv');
     }
 
-    public function testGetHeaders()
+    public function testGetHeaders(): void
     {
         $this->assertEquals(
             [
@@ -35,7 +35,7 @@ class ReaderTest extends TestCase
         );
     }
 
-    public function testGetRow()
+    public function testGetRow(): void
     {
         $this->assertEquals(
             [
@@ -63,7 +63,7 @@ class ReaderTest extends TestCase
         );
     }
 
-    public function testGetRows()
+    public function testGetRows(): void
     {
         $this->assertEquals(
             [
@@ -82,8 +82,8 @@ class ReaderTest extends TestCase
         );
     }
 
-    public function testGetAll()
+    public function testGetAll(): void
     {
-        $this->assertEquals(3, count($this->reader->getAll()));
+        $this->assertCount(3, $this->reader->getAll());
     }
 }

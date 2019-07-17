@@ -24,7 +24,7 @@ class TestEntity
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -34,7 +34,7 @@ class TestEntity
         return $this->field1;
     }
 
-    public function setField1($field1)
+    public function setField1($field1): void
     {
         $this->field1 = $field1;
     }
@@ -44,7 +44,7 @@ class TestEntity
         return $this->field2;
     }
 
-    public function setField2($field2)
+    public function setField2($field2): void
     {
         $this->field2 = $field2;
     }

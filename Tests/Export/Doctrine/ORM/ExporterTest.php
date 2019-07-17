@@ -24,7 +24,7 @@ class ExporterTest extends TestCase
      */
     protected $exporter;
 
-    public function setUp()
+    public function setUp(): void
     {
         $query = $this->getMockForAbstractClass(AbstractQuery::class, [], '', false, true, true, ['iterate', 'HYDRATE_ARRAY', 'getSQL', '_doExecute']);
         $query
@@ -60,7 +60,7 @@ class ExporterTest extends TestCase
     /**
      * Test init.
      */
-    public function testInit()
+    public function testInit(): void
     {
         $this->exporter->init(TestEntity::class);
         $this->assertInstanceOf(QueryBuilder::class, $this->exporter->getQueryBuilder());
@@ -69,7 +69,7 @@ class ExporterTest extends TestCase
     /**
      * Test convert row.
      */
-    public function testArrayToCsv()
+    public function testArrayToCsv(): void
     {
         $this->assertEquals(
             '"val\'1","val,2","val""3"'."\n",
@@ -80,7 +80,7 @@ class ExporterTest extends TestCase
     /**
      * Test convert row.
      */
-    public function testGetContent()
+    public function testGetContent(): void
     {
         $expected = '"row 1","row 2","row 3"';
         $expected .= "\n";

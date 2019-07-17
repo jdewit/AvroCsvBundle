@@ -20,7 +20,7 @@
     "require": {
         "php": "^7.2.0",
         "ext-json": "*",
-        "avro/case-bundle": "*"
+        "misatotremor/case-bundle": "^0.4.1"
     },
     "require-dev": {
         "twig/twig": "*",

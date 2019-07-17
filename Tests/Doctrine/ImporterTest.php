@@ -27,7 +27,7 @@ class ImporterTest extends TestCase
     /**
      * Setup test class.
      */
-    public function setUp()
+    public function setUp(): void
     {
         $caseConverter = $this->createMock(CaseConverter::class);
         $caseConverter
@@ -51,7 +51,7 @@ class ImporterTest extends TestCase
     /**
      * Test getHeaders.
      */
-    public function testGetHeaders()
+    public function testGetHeaders(): void
     {
         $this->importer->init(__DIR__.'/../import.csv', $this->class);
         $this->assertEquals(
@@ -67,7 +67,7 @@ class ImporterTest extends TestCase
     /**
      * Test getHeaders.
      */
-    public function testGetFormHeaders()
+    public function testGetFormHeaders(): void
     {
         $this->importer->init(__DIR__.'/../import.csv', $this->class, ',', 'form');
         $this->assertEquals(

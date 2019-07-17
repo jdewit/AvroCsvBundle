@@ -11,6 +11,7 @@ use Avro\CaseBundle\Util\CaseConverter;
 use Avro\CsvBundle\Tests\TestEntity;
 use Avro\CsvBundle\Util\FieldRetriever;
 use Doctrine\Common\Annotations\AnnotationReader;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class FieldRetrieverTest extends TestCase
@@ -24,11 +25,11 @@ class FieldRetrieverTest extends TestCase
      */
     protected $class;
     /**
-     * @var CaseConverter|\PHPUnit_Framework_MockObject_MockObject
+     * @var CaseConverter|MockObject
      */
     private $caseConverter;
 
-    public function setUp()
+    public function setUp(): void
     {
         $annotationReader = new AnnotationReader();
         $this->caseConverter = $this->createMock(CaseConverter::class);
@@ -54,7 +55,7 @@ class FieldRetrieverTest extends TestCase
         $this->class = TestEntity::class;
     }
 
-    public function testGetFields()
+    public function testGetFields(): void
     {
         $this->assertEquals(
             $this->fieldRetriever->getFields($this->class),
@@ -69,7 +70,7 @@ class FieldRetrieverTest extends TestCase
         );
     }
 
-    public function testGetFieldsAsCamelCase()
+    public function testGetFieldsAsCamelCase(): void
     {
         $this->assertEquals(
             $this->fieldRetriever->getFields($this->class, 'camel'),
@@ -84,7 +85,7 @@ class FieldRetrieverTest extends TestCase
         );
     }
 
-    public function testGetFieldsAndCopyKeys()
+    public function testGetFieldsAndCopyKeys(): void
     {
         $this->assertEquals(
             $this->fieldRetriever->getFields($this->class, 'camel', true),
