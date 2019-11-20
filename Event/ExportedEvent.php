@@ -35,4 +35,14 @@ class ExportedEvent extends Event
     {
         return $this->content;
     }
+
+    /**
+     * Set the csv data.
+     *
+     * @param string $content
+     */
+    public function setContent(string $content): void
+    {
+        $this->content = $content;
+    }
 }

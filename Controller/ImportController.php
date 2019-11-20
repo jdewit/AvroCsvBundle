@@ -63,7 +63,7 @@ class ImportController implements ContainerAwareInterface
      *
      * @return Response
      */
-    public function uploadAction($alias)
+    public function uploadAction($alias): Response
     {
         $fieldChoices = $this->fieldRetriever->getFields(
             $this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)),
@@ -91,7 +91,7 @@ class ImportController implements ContainerAwareInterface
      *
      * @return Response
      */
-    public function mappingAction(Request $request, $alias)
+    public function mappingAction(Request $request, $alias): Response
     {
         $fieldChoices = $this->fieldRetriever->getFields(
             $this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)),
@@ -156,7 +156,7 @@ class ImportController implements ContainerAwareInterface
      *
      * @return Response
      */
-    public function processAction(Request $request, $alias)
+    public function processAction(Request $request, $alias): Response
     {
         $fieldChoices = $this->fieldRetriever->getFields(
             $this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias)),

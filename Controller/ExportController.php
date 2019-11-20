@@ -47,7 +47,7 @@ class ExportController implements ContainerAwareInterface
      *
      * @return Response
      */
-    public function exportAction($alias)
+    public function exportAction($alias): Response
     {
         $class = $this->container->getParameter(sprintf('avro_csv.objects.%s.class', $alias));
 
@@ -55,11 +55,11 @@ class ExportController implements ContainerAwareInterface
 
         $this->eventDispatcher->dispatch(AvroCsvEvents::EXPORT, new ExportEvent($this->exporter));
 
-        $content = $this->exporter->getContent();
+        $exportedEvent = new ExportedEvent($this->exporter->getContent());
 
-        $this->eventDispatcher->dispatch(AvroCsvEvents::EXPORTED, new ExportedEvent($content));
+        $this->eventDispatcher->dispatch(AvroCsvEvents::EXPORTED, $exportedEvent);
 
-        $response = new Response($content);
+        $response = new Response($exportedEvent->getContent());
         $response->headers->set('Content-Type', 'application/csv');
         $response->headers->set('Content-Disposition', sprintf('attachment; filename="%s.csv"', $alias));
 

@@ -264,6 +264,9 @@ This bundle provides some simple exporting functionality.
 Navigating to "/export/your-alias" will export all of your data to a csv and allow 
 you to download it from the browser.
 
+You can customize the export query builder and the exported data by listening to the
+corresponding events (See ``Avro\CsvBundle\AvroCsvEvents``).
+
 If you want to customize data returned, just create your own controller action and grab 
 the queryBuilder from the exporter and add your constraints before calling "getContent()". 
 
@@ -281,12 +284,12 @@ class ExportController extends AbstractController
     /**
      * Export a db table.
      *
-     * @param ExporterInterface $alias The exporter
-     * @param string            $alias The objects alias
+     * @param ExporterInterface $exporter The exporter
+     * @param string            $alias    The objects alias
      *
      * @return Response
      */
-    public function exportAction(ExporterInterface $exporter), string $alias): Response
+    public function exportAction(ExporterInterface $exporter, string $alias): Response
     {
         $class = $this->getParameter(sprintf('avro_csv.objects.%s.class', $alias));
 
