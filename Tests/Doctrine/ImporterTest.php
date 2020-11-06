@@ -11,7 +11,7 @@ use Avro\CaseBundle\Util\CaseConverter;
 use Avro\CsvBundle\Doctrine\Importer;
 use Avro\CsvBundle\Tests\TestEntity;
 use Avro\CsvBundle\Util\Reader;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -40,7 +40,7 @@ class ImporterTest extends TestCase
                 ]
             );
         $reader = new Reader();
-        $objectManager = $this->createMock(ObjectManager::class);
+        $objectManager = $this->createMock(EntityManagerInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $this->class = TestEntity::class;

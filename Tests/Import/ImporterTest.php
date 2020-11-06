@@ -11,7 +11,7 @@ use Avro\CaseBundle\Util\CaseConverter;
 use Avro\CsvBundle\Import\Importer;
 use Avro\CsvBundle\Tests\TestEntity;
 use Avro\CsvBundle\Util\Reader;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -73,7 +73,7 @@ class ImporterTest extends TestCase
         $metadata
             ->method('getAssociationMapping')
             ->willReturn([]);
-        $objectManager = $this->createMock(ObjectManager::class);
+        $objectManager = $this->createMock(EntityManagerInterface::class);
         $objectManager
             ->method('getClassMetadata')
             ->willReturn($metadata);

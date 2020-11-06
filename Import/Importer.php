@@ -13,7 +13,7 @@ use Avro\CsvBundle\Event\CustomFieldEvent;
 use Avro\CsvBundle\Event\RowAddedEvent;
 use Avro\CsvBundle\Event\RowErrorEvent;
 use Avro\CsvBundle\Util\Reader;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -62,7 +62,7 @@ class Importer implements ImporterInterface
      */
     protected $caseConverter;
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
     protected $objectManager;
     /**
@@ -74,10 +74,10 @@ class Importer implements ImporterInterface
      * @param Reader                   $reader        The csv reader
      * @param EventDispatcherInterface $dispatcher    The event dispatcher
      * @param CaseConverter            $caseConverter The case Converter
-     * @param ObjectManager            $objectManager The Doctrine Object Manager
+     * @param EntityManagerInterface   $objectManager The Doctrine Object Manager
      * @param int                      $batchSize     The batch size before flushing the om
      */
-    public function __construct(Reader $reader, EventDispatcherInterface $dispatcher, CaseConverter $caseConverter, ObjectManager $objectManager, $batchSize)
+    public function __construct(Reader $reader, EventDispatcherInterface $dispatcher, CaseConverter $caseConverter, EntityManagerInterface $objectManager, $batchSize)
     {
         $this->reader = $reader;
         $this->dispatcher = $dispatcher;
