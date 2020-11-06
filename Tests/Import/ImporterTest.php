@@ -11,9 +11,10 @@ use Avro\CaseBundle\Util\CaseConverter;
 use Avro\CsvBundle\Import\Importer;
 use Avro\CsvBundle\Tests\TestEntity;
 use Avro\CsvBundle\Util\Reader;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -79,7 +80,7 @@ class ImporterTest extends TestCase
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
         $dispatcher
             ->method('dispatch')
-            ->willReturn('true');
+            ->willReturn(new stdClass());
 
         $this->importer = new Importer($reader, $dispatcher, $caseConverter, $objectManager, 5);
         $this->importer->init(__DIR__.'/../import.csv', TestEntity::class);
@@ -87,6 +88,8 @@ class ImporterTest extends TestCase
 
     /**
      * Test import.
+     *
+     * @group legacy
      */
     public function testImport(): void
     {

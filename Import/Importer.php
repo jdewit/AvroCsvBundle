@@ -8,13 +8,12 @@
 namespace Avro\CsvBundle\Import;
 
 use Avro\CaseBundle\Util\CaseConverter;
-use Avro\CsvBundle\AvroCsvEvents;
 use Avro\CsvBundle\Event\AssociationFieldEvent;
 use Avro\CsvBundle\Event\CustomFieldEvent;
 use Avro\CsvBundle\Event\RowAddedEvent;
 use Avro\CsvBundle\Event\RowErrorEvent;
 use Avro\CsvBundle\Util\Reader;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -208,18 +207,18 @@ class Importer implements ImporterInterface
             } elseif ($this->metadata->hasAssociation(lcfirst($v))) {
                 // Let implementors handle associations to allow complex cases
                 $event = new AssociationFieldEvent($entity, $this->metadata->getAssociationMapping(lcfirst($v)), $row, $fields, $this->headers, $k);
-                $this->dispatcher->dispatch(AvroCsvEvents::ASSOCIATION_FIELD, $event);
+                $this->dispatcher->dispatch($event);
             } elseif ($this->metadata->getReflectionClass()->hasProperty(lcfirst($v))) {
                 $event = new CustomFieldEvent($entity, $this->metadata->getReflectionClass(), $row, $fields, $this->headers, $k);
-                $this->dispatcher->dispatch(AvroCsvEvents::CUSTOM_FIELD, $event);
+                $this->dispatcher->dispatch($event);
             }
         }
         // Allow RowAddedEvent listeners to nullify objects (i.e. when invalid)
         $event = new RowAddedEvent($entity, $row, $fields);
-        $this->dispatcher->dispatch(AvroCsvEvents::ROW_ADDED, $event);
+        $this->dispatcher->dispatch($event);
         $entity = $event->getObject();
         if (null === $entity) {
-            $this->dispatcher->dispatch(AvroCsvEvents::ROW_ERROR, new RowErrorEvent($row, $fields));
+            $this->dispatcher->dispatch(new RowErrorEvent($row, $fields));
 
             return false;
         }

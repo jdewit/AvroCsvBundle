@@ -8,7 +8,7 @@
 namespace Avro\CsvBundle\Event;
 
 use ReflectionClass;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Row association event.

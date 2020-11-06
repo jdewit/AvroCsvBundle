@@ -11,7 +11,7 @@ use Avro\CaseBundle\Util\CaseConverter;
 use Avro\CsvBundle\Doctrine\Importer;
 use Avro\CsvBundle\Tests\TestEntity;
 use Avro\CsvBundle\Util\Reader;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 

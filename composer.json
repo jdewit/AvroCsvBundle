@@ -9,12 +9,15 @@
         {
             "name": "Joris de Wit",
             "email": "joris.w.dewit@gmail.com"
+        },
+        {
+            "name": "Steffen Roßkamp",
+            "email": "sr@blackblizzard.org"
         }
     ],
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.4-dev"
+            "dev-master": "0.5-dev"
         }
     },
     "require": {
@@ -23,14 +26,19 @@
         "misatotremor/case-bundle": "^0.4.1"
     },
     "require-dev": {
-        "twig/twig": "*",
-        "doctrine/doctrine-bundle": "*",
-        "doctrine/orm": "*",
-        "symfony/form": "^4.0",
-        "symfony/framework-bundle": "^4.0",
-        "symfony/phpunit-bridge": "^4.1.8"
+        "doctrine/doctrine-bundle": "^1.12|^2.1.0",
+        "doctrine/orm": "^2.7",
+        "symfony/event-dispatcher": "^4.3|^5.0",
+        "symfony/form": "^4.0|^5.0",
+        "symfony/framework-bundle": "^4.0|^5.0",
+        "symfony/routing": "^4.0|^5.0",
+        "symfony/phpunit-bridge": "^4.4|^5.0",
+        "twig/twig": "^2.4|^3.0"
     },
     "autoload": {
-        "psr-4": { "Avro\\CsvBundle\\": "" }
+        "psr-4": { "Avro\\CsvBundle\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
     }
 }

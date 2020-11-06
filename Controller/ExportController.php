@@ -7,7 +7,6 @@
 
 namespace Avro\CsvBundle\Controller;
 
-use Avro\CsvBundle\AvroCsvEvents;
 use Avro\CsvBundle\Event\ExportedEvent;
 use Avro\CsvBundle\Event\ExportEvent;
 use Avro\CsvBundle\Export\ExporterInterface;
@@ -53,11 +52,11 @@ class ExportController implements ContainerAwareInterface
 
         $this->exporter->init($class);
 
-        $this->eventDispatcher->dispatch(AvroCsvEvents::EXPORT, new ExportEvent($this->exporter));
+        $this->eventDispatcher->dispatch(new ExportEvent($this->exporter));
 
         $exportedEvent = new ExportedEvent($this->exporter->getContent());
 
-        $this->eventDispatcher->dispatch(AvroCsvEvents::EXPORTED, $exportedEvent);
+        $this->eventDispatcher->dispatch($exportedEvent);
 
         $response = new Response($exportedEvent->getContent());
         $response->headers->set('Content-Type', 'application/csv');

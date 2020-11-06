@@ -9,7 +9,7 @@ namespace Avro\CsvBundle\Event;
 
 use Avro\CsvBundle\Export\ExporterInterface;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Export initialized event.

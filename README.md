@@ -133,14 +133,13 @@ Association mapping
 An event is fired when importing an association field to allow implementing your
 own logic fitting
  
-Just create a custom listener in your app that listens for the ``AvroCsvEvents::ASSOCIATION_FIELD`` event.
+Just create a custom listener in your app that listens for the ``AssociationFieldEvent::class`` event.
 
 A simple implementation getting an associated entity by name could look like:
 
 ```php
 namespace App\EventListener;
 
-use Avro\CsvBundle\AvroCsvEvents;
 use Avro\CsvBundle\Event\AssociationFieldEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -164,7 +163,7 @@ class ImportListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            AvroCsvEvents::ASSOCIATION_FIELD => 'importAssociation',
+            AssociationFieldEvent::class => 'importAssociation',
         ];
     }
 
@@ -200,14 +199,13 @@ Want to customize certain fields on each row? No problem.
 
 An event is fired when a row is added that you can tap into to customize each row of data.
 
-Just create a custom listener in your app that listens for the ``AvroCsvEvents::ROW_ADDED`` event.
+Just create a custom listener in your app that listens for the ``RowAddedEvent::class`` event.
 
 For example...
 
 ```php
 namespace App\EventListener;
 
-use Avro\CsvBundle\AvroCsvEvents;
 use Avro\CsvBundle\Event\RowAddedEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -234,7 +232,7 @@ class ImportListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            AvroCsvEvents::ROW_ADDED => 'setCreatedBy',
+            RowAddedEvent::class => 'setCreatedBy',
         ];
     }
 
@@ -265,7 +263,7 @@ Navigating to "/export/your-alias" will export all of your data to a csv and all
 you to download it from the browser.
 
 You can customize the export query builder and the exported data by listening to the
-corresponding events (See ``Avro\CsvBundle\AvroCsvEvents``).
+corresponding events (See events in the ``Avro\CsvBundle\Event`` namespace).
 
 If you want to customize data returned, just create your own controller action and grab 
 the queryBuilder from the exporter and add your constraints before calling "getContent()". 
