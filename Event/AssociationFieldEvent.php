@@ -23,14 +23,6 @@ class AssociationFieldEvent extends Event
     protected $headers;
     protected $index;
 
-    /**
-     * @param object $object
-     * @param array  $associationMapping
-     * @param array  $row
-     * @param array  $fields
-     * @param array  $headers
-     * @param int    $index
-     */
     public function __construct(object $object, array $associationMapping, array $row, array $fields, array $headers, int $index)
     {
         $this->object = $object;
@@ -41,9 +33,6 @@ class AssociationFieldEvent extends Event
         $this->index = $index;
     }
 
-    /**
-     * @return object
-     */
     public function getObject(): object
     {
         return $this->object;
@@ -51,8 +40,6 @@ class AssociationFieldEvent extends Event
 
     /**
      * Get field association mapping.
-     *
-     * @return array
      */
     public function getAssociationMapping(): array
     {
@@ -61,8 +48,6 @@ class AssociationFieldEvent extends Event
 
     /**
      * Get field row.
-     *
-     * @return array
      */
     public function getRow(): array
     {
@@ -71,8 +56,6 @@ class AssociationFieldEvent extends Event
 
     /**
      * Get mapped fields.
-     *
-     * @return array
      */
     public function getFields(): array
     {
@@ -81,8 +64,6 @@ class AssociationFieldEvent extends Event
 
     /**
      * Get CSV headers.
-     *
-     * @return array
      */
     public function getHeaders(): array
     {
@@ -91,8 +72,6 @@ class AssociationFieldEvent extends Event
 
     /**
      * Get the current field index.
-     *
-     * @return int
      */
     public function getIndex(): int
     {

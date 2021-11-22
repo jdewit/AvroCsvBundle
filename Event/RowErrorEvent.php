@@ -31,8 +31,6 @@ class RowErrorEvent extends Event
 
     /**
      * Get field row.
-     *
-     * @return array
      */
     public function getRow(): array
     {
@@ -41,8 +39,6 @@ class RowErrorEvent extends Event
 
     /**
      * Get mapped fields.
-     *
-     * @return array
      */
     public function getFields(): array
     {

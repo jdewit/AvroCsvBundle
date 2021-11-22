@@ -46,15 +46,11 @@ interface ImporterInterface
 
     /**
      * Get import count.
-     *
-     * @return int
      */
     public function getImportCount(): int;
 
     /**
      * Get import errors.
-     *
-     * @return int
      */
     public function getImportErrors(): int;
 }

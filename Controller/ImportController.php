@@ -60,8 +60,6 @@ class ImportController implements ContainerAwareInterface
      * Upload a csv.
      *
      * @param string $alias The objects alias
-     *
-     * @return Response
      */
     public function uploadAction($alias): Response
     {
@@ -88,8 +86,6 @@ class ImportController implements ContainerAwareInterface
      *
      * @param Request $request The request
      * @param string  $alias   The objects alias
-     *
-     * @return Response
      */
     public function mappingAction(Request $request, $alias): Response
     {
@@ -153,8 +149,6 @@ class ImportController implements ContainerAwareInterface
      *
      * @param Request $request The request
      * @param string  $alias   The objects alias
-     *
-     * @return Response
      */
     public function processAction(Request $request, $alias): Response
     {

@@ -30,8 +30,6 @@ class ExportEvent extends Event
 
     /**
      * Get the avro exporter.
-     *
-     * @return ExporterInterface
      */
     public function getExporter(): ExporterInterface
     {
@@ -40,8 +38,6 @@ class ExportEvent extends Event
 
     /**
      * Get the queryBuilder.
-     *
-     * @return QueryBuilder
      */
     public function getQueryBuilder(): QueryBuilder
     {

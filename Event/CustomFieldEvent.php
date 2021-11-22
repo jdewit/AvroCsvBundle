@@ -24,14 +24,6 @@ class CustomFieldEvent extends Event
     protected $headers;
     protected $index;
 
-    /**
-     * @param object          $object
-     * @param ReflectionClass $reflectionClass
-     * @param array           $row
-     * @param array           $fields
-     * @param array           $headers
-     * @param int             $index
-     */
     public function __construct(object $object, ReflectionClass $reflectionClass, array $row, array $fields, array $headers, int $index)
     {
         $this->object = $object;
@@ -42,9 +34,6 @@ class CustomFieldEvent extends Event
         $this->index = $index;
     }
 
-    /**
-     * @return object
-     */
     public function getObject(): object
     {
         return $this->object;
@@ -52,8 +41,6 @@ class CustomFieldEvent extends Event
 
     /**
      * Get object reflection class.
-     *
-     * @return ReflectionClass
      */
     public function getReflectionClass(): ReflectionClass
     {
@@ -62,8 +49,6 @@ class CustomFieldEvent extends Event
 
     /**
      * Get field row.
-     *
-     * @return array
      */
     public function getRow(): array
     {
@@ -72,8 +57,6 @@ class CustomFieldEvent extends Event
 
     /**
      * Get mapped fields.
-     *
-     * @return array
      */
     public function getFields(): array
     {
@@ -82,8 +65,6 @@ class CustomFieldEvent extends Event
 
     /**
      * Get CSV headers.
-     *
-     * @return array
      */
     public function getHeaders(): array
     {
@@ -92,8 +73,6 @@ class CustomFieldEvent extends Event
 
     /**
      * Get the current field index.
-     *
-     * @return int
      */
     public function getIndex(): int
     {

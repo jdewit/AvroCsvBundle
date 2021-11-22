@@ -29,9 +29,6 @@ class ExportController implements ContainerAwareInterface
 
     /**
      * ExportController constructor.
-     *
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param ExporterInterface        $exporter
      */
     public function __construct(EventDispatcherInterface $eventDispatcher, ExporterInterface $exporter)
     {
@@ -43,8 +40,6 @@ class ExportController implements ContainerAwareInterface
      * Export a db table.
      *
      * @param string $alias The objects alias
-     *
-     * @return Response
      */
     public function exportAction($alias): Response
     {

@@ -28,7 +28,7 @@ abstract class Exporter
      */
     public function getContent()
     {
-        $iterableResults = $this->queryBuilder->getQuery()->iterate(null, 2);
+        $iterableResults = $this->queryBuilder->getQuery()->toIterable([], 2);
 
         $content = null;
         foreach ($iterableResults as $row) {

@@ -1,5 +1,11 @@
 <?php
-return PhpCsFixer\Config::create()
+
+/*
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+return (new PhpCsFixer\Config())
     ->setRules(
         [
             '@Symfony' => true,
@@ -17,4 +23,12 @@ return PhpCsFixer\Config::create()
             'header_comment' => ['header' => "For the full copyright and license information, please view the LICENSE\nfile that was distributed with this source code."],
         ]
     )
-    ->setCacheFile(__DIR__ . '/.php_cs.cache');
+    ->setFinder(
+        (new PhpCsFixer\Finder())
+            ->in([
+                __DIR__,
+            ])
+            ->notPath('#/Fixtures/#')
+            ->append([__FILE__])
+    )
+    ->setCacheFile(__DIR__.'/.php-cs-fixer.cache');

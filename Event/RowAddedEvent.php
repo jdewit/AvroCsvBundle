@@ -32,9 +32,6 @@ class RowAddedEvent extends Event
         $this->fields = $fields;
     }
 
-    /**
-     * @param object|null $object
-     */
     public function setObject(?object $object): void
     {
         $this->object = $object;
@@ -42,8 +39,6 @@ class RowAddedEvent extends Event
 
     /**
      * Get the doctrine object.
-     *
-     * @return object|null
      */
     public function getObject(): ?object
     {
@@ -52,8 +47,6 @@ class RowAddedEvent extends Event
 
     /**
      * Get field row.
-     *
-     * @return array
      */
     public function getRow(): array
     {
@@ -62,8 +55,6 @@ class RowAddedEvent extends Event
 
     /**
      * Get mapped fields.
-     *
-     * @return array
      */
     public function getFields(): array
     {

@@ -19,16 +19,13 @@ use PHPUnit\Framework\TestCase;
  */
 class ExporterTest extends TestCase
 {
-    /**
-     * @var Exporter
-     */
-    protected $exporter;
+    protected Exporter $exporter;
 
     public function setUp(): void
     {
-        $query = $this->getMockForAbstractClass(AbstractQuery::class, [], '', false, true, true, ['iterate', 'HYDRATE_ARRAY', 'getSQL', '_doExecute']);
+        $query = $this->getMockForAbstractClass(AbstractQuery::class, [], '', false, true, true, ['toIterable', 'HYDRATE_ARRAY', 'getSQL', '_doExecute']);
         $query
-            ->method('iterate')
+            ->method('toIterable')
             ->willReturn([0 => [0 => ['row 1' => 'val\'1', 'row 2' => 'val,2', 'row 3' => 'val"3']]]);
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
             ->disableOriginalConstructor()

@@ -28,8 +28,6 @@ class ExportedEvent extends Event
 
     /**
      * Get the csv data.
-     *
-     * @return string
      */
     public function getContent(): string
     {
@@ -38,8 +36,6 @@ class ExportedEvent extends Event
 
     /**
      * Set the csv data.
-     *
-     * @param string $content
      */
     public function setContent(string $content): void
     {

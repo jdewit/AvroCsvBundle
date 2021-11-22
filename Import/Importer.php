@@ -155,8 +155,6 @@ class Importer implements ImporterInterface
 
     /**
      * Get import count.
-     *
-     * @return int
      */
     public function getImportCount(): int
     {
@@ -165,8 +163,6 @@ class Importer implements ImporterInterface
 
     /**
      * Get import errors.
-     *
-     * @return int
      */
     public function getImportErrors(): int
     {
@@ -177,8 +173,6 @@ class Importer implements ImporterInterface
      * Generate a hash string suitable as form field name.
      *
      * @param string $input
-     *
-     * @return string
      */
     private function convertToFormFieldName($input): string
     {
@@ -193,8 +187,6 @@ class Importer implements ImporterInterface
      * @param bool  $andFlush Flush the ObjectManager
      *
      * @throws MappingException
-     *
-     * @return bool
      */
     private function addRow($row, $fields, $andFlush = true): bool
     {

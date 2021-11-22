@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -30,6 +30,16 @@ class Writer
      * @var int
      */
     protected $line;
+
+    /*
+     * Close file if necessary
+     */
+    public function __destruct()
+    {
+        if (is_resource($this->handle)) {
+            fclose($this->handle);
+        }
+    }
 
     /**
      * Open CSV file.
@@ -102,16 +112,6 @@ EOT;
     {
         foreach ($array as $key => $value) {
             $this->writeRow($value);
-        }
-    }
-
-    /*
-     * Close file if necessary
-     */
-    public function __destruct()
-    {
-        if (is_resource($this->handle)) {
-            fclose($this->handle);
         }
     }
 }

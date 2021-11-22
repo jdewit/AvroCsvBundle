@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -19,6 +19,16 @@ class Reader
     protected $enclosure;
     protected $line;
     protected $headers;
+
+    /**
+     * Close file.
+     */
+    public function __destruct()
+    {
+        if (is_resource($this->handle)) {
+            fclose($this->handle);
+        }
+    }
 
     /**
      * Open a CSV file.
@@ -100,15 +110,5 @@ class Reader
     public function getHeaders()
     {
         return $this->headers;
-    }
-
-    /**
-     * Close file.
-     */
-    public function __destruct()
-    {
-        if (is_resource($this->handle)) {
-            fclose($this->handle);
-        }
     }
 }

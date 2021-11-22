@@ -1,6 +1,7 @@
-*.swp
-vendor/
-composer.phar
 composer.lock
-
-
+composer.phar
+.php-cs-fixer.cache
+.phpunit
+.phpunit.cache
+/phpunit.xml
+vendor/*
