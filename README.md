@@ -1,4 +1,4 @@
-AvroCsvBundle [![Build Status](https://github.com/jdewit/AvroCaseBundle/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/jdewit/AvroCsvBundle)  [![codecov](https://codecov.io/gh/jdewit/AvroCsvBundle/branch/1.0.x/graph/badge.svg?token=71BXHZLTCH)](https://codecov.io/gh/jdewit/AvroCsvBundle)
+AvroCsvBundle [![Build Status](https://github.com/jdewit/AvroCsvBundle/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/jdewit/AvroCsvBundle)  [![codecov](https://codecov.io/gh/jdewit/AvroCsvBundle/branch/1.0.x/graph/badge.svg?token=71BXHZLTCH)](https://codecov.io/gh/jdewit/AvroCsvBundle)
 -------------------
 
 This bundle provides an easy way to upload data to your db using csv files with 
