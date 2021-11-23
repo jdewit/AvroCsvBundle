@@ -7,9 +7,12 @@
 
 namespace Avro\CsvBundle\Annotation;
 
+use Attribute;
+
 /**
  * @Annotation
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 class ImportExclude
 {
 }

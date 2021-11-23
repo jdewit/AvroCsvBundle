@@ -104,7 +104,25 @@ class Client
      * @ImportExclude
      */
     protected $password;
+    // ...
+}
+```
 
+Since PHP 8 you can also use it as an attribute like this
+```php
+namespace Avro\CrmBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Avro\CsvBundle\Annotation\ImportExclude;
+
+#[ORM\Entity]
+class Client
+{
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    #[ImportExclude]
+    protected string $password;
+    // ...
+}
 ```
 
 Importing

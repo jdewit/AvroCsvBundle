@@ -54,6 +54,14 @@ class FieldRetriever
                     $addField = false;
                 }
             }
+            if (PHP_VERSION_ID >= 80000) {
+                foreach ($property->getAttributes() as $attribute) {
+                    $attributeName = $attribute->getName();
+                    if (ImportExclude::class === $attributeName) {
+                        $addField = false;
+                    }
+                }
+            }
 
             if ($addField) {
                 $fields[] = $this->caseConverter->convert($property->getName(), $format);
